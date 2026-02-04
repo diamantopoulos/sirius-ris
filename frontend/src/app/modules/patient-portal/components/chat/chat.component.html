@@ -24,10 +24,19 @@
 
         <div *ngFor="let msg of messages$ | async"
              class="message"
-             [ngClass]="{'user-message': msg.role === 'user', 'assistant-message': msg.role === 'assistant'}">
+             [ngClass]="{
+               'user-message': msg.role === 'user',
+               'assistant-message': msg.role === 'assistant',
+               'streaming': msg.isStreaming
+             }">
           <div class="message-bubble">
-            <p>{{ msg.content }}</p>
-            <span class="message-time">{{ msg.timestamp | date:'shortTime' }}</span>
+            <p class="message-content" *ngIf="msg.content">{{ msg.content }}</p>
+            <span class="typing-indicator" *ngIf="msg.isStreaming && !msg.content">
+              <span></span><span></span><span></span>
+            </span>
+            <span class="message-time" *ngIf="!msg.isStreaming">
+              {{ msg.timestamp | date:'shortTime' }}
+            </span>
           </div>
         </div>
       </div>
@@ -40,11 +49,12 @@
           <input matInput
                  [(ngModel)]="newMessage"
                  (keypress)="onKeyPress($event)"
+                 [disabled]="isLoading$ | async"
                  placeholder="e.g., I need to book a CT scan">
         </mat-form-field>
         <button mat-fab color="primary"
                 (click)="sendMessage()"
-                [disabled]="!newMessage.trim()">
+                [disabled]="!newMessage.trim() || (isLoading$ | async)">
           <mat-icon>send</mat-icon>
         </button>
       </div>

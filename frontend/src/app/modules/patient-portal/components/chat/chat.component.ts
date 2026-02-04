@@ -11,14 +11,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
   messages$: Observable<ChatMessage[]>;
+  isLoading$: Observable<boolean>;
   newMessage = '';
   private shouldScroll = false;
 
   constructor(private chatService: ChatService) {
     this.messages$ = this.chatService.getMessages();
+    this.isLoading$ = this.chatService.isLoading();
   }
 
   ngOnInit(): void {
+    // SSE doesn't require explicit connect - it connects on-demand
     this.chatService.connect();
   }
 

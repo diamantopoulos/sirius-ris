@@ -4,7 +4,8 @@
 // Set Enviroment:
 export const environment = {
   production: true,
-  version: '1.5.1'
+  version: '1.5.1',
+  bookingAgentUrl: '/api/booking-agent'  // Production: proxy through nginx
 };
 
 // Set ObjectId regular expression to validate ObjectIds:

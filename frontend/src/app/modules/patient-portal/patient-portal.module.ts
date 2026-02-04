@@ -19,9 +19,13 @@ import { BookingComponent } from '@modules/patient-portal/components/booking/boo
 import { SelectProcedurePatientComponent } from '@modules/patient-portal/components/select-procedure-patient/select-procedure-patient.component';
 import { SelectSlotPatientComponent } from '@modules/patient-portal/components/select-slot-patient/select-slot-patient.component';
 import { ConfirmBookingComponent } from '@modules/patient-portal/components/confirm-booking/confirm-booking.component';
+import { MyAppointmentsComponent } from '@modules/patient-portal/components/my-appointments/my-appointments.component';
+import { MyCalendarComponent } from '@modules/patient-portal/components/my-calendar/my-calendar.component';
+import { AppointmentDetailsDialogComponent } from '@modules/patient-portal/components/appointment-details-dialog/appointment-details-dialog.component';
+import { ConfirmDialogComponent } from '@modules/patient-portal/components/confirm-dialog/confirm-dialog.component';
 
 // Services
-import { WebsocketService } from '@modules/patient-portal/services/websocket.service';
+import { BookingAgentService } from '@modules/patient-portal/services/booking-agent.service';
 import { ChatService } from '@modules/patient-portal/services/chat.service';
 import { PatientBookingService } from '@modules/patient-portal/services/patient-booking.service';
 
@@ -33,7 +37,11 @@ import { PatientBookingService } from '@modules/patient-portal/services/patient-
     BookingComponent,
     SelectProcedurePatientComponent,
     SelectSlotPatientComponent,
-    ConfirmBookingComponent
+    ConfirmBookingComponent,
+    MyAppointmentsComponent,
+    MyCalendarComponent,
+    AppointmentDetailsDialogComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     CommonModule,
@@ -46,7 +54,7 @@ import { PatientBookingService } from '@modules/patient-portal/services/patient-
     FullCalendarModule
   ],
   providers: [
-    WebsocketService,
+    BookingAgentService,
     ChatService,
     PatientBookingService,
     // If you enter this module directly having an authentication file in the browser, it is necessary to

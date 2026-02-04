@@ -1,87 +1,84 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { WebsocketService } from './websocket.service';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { BookingAgentService, ChatMessage } from './booking-agent.service';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date;
-}
+// Re-export ChatMessage for consumers
+export { ChatMessage } from './booking-agent.service';
 
+/**
+ * Chat service - facade over BookingAgentService
+ *
+ * Provides a simple interface for the chat component to send/receive messages.
+ * Uses SSE streaming for real-time responses from the AI booking agent.
+ */
 @Injectable()
 export class ChatService implements OnDestroy {
-  private messages$ = new BehaviorSubject<ChatMessage[]>([]);
   private destroy$ = new Subject<void>();
-  private connected = false;
 
-  constructor(private websocket: WebsocketService) {}
-
-  connect(): void {
-    if (this.connected) return;
-
-    this.websocket.connect().pipe(
-      takeUntil(this.destroy$),
-      filter(msg => msg != null)
-    ).subscribe({
-      next: (msg) => this.handleMessage(msg),
-      error: (err) => console.error('Chat connection error:', err)
+  constructor(private bookingAgent: BookingAgentService) {
+    // Subscribe to errors and log them
+    this.bookingAgent.getErrors().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(error => {
+      console.error('Chat service error:', error);
     });
-
-    this.connected = true;
   }
 
-  private handleMessage(msg: any): void {
-    // Handle different message types from chat-service
-    if (msg.type === 'state_sync') {
-      // Restore conversation state on reconnect
-      const messages = msg.messages || [];
-      this.messages$.next(messages);
-    } else if (msg.type === 'assistant' || msg.type === 'echo') {
-      // Add assistant response
-      const newMessage: ChatMessage = {
-        role: 'assistant',
-        content: msg.content,
-        timestamp: new Date()
-      };
-      const current = this.messages$.getValue();
-      this.messages$.next([...current, newMessage]);
-    }
-  }
-
+  /**
+   * Send a message to the booking agent
+   * Response will be streamed via SSE and added to messages
+   */
   sendMessage(content: string): void {
-    // Add user message to local state
-    const userMessage: ChatMessage = {
-      role: 'user',
-      content,
-      timestamp: new Date()
-    };
-    const current = this.messages$.getValue();
-    this.messages$.next([...current, userMessage]);
-
-    // Send to server
-    this.websocket.send({
-      type: 'user_message',
-      content
-    });
+    this.bookingAgent.sendMessage(content);
   }
 
+  /**
+   * Get observable of all messages
+   */
   getMessages(): Observable<ChatMessage[]> {
-    return this.messages$.asObservable();
+    return this.bookingAgent.getMessages();
   }
 
+  /**
+   * Get loading state (true while streaming response)
+   */
+  isLoading(): Observable<boolean> {
+    return this.bookingAgent.getLoadingState();
+  }
+
+  /**
+   * Clear all messages (local and server-side)
+   */
   clearMessages(): void {
-    this.messages$.next([]);
+    this.bookingAgent.clearConversation();
   }
 
+  /**
+   * Cancel current request (if streaming)
+   */
+  cancelRequest(): void {
+    this.bookingAgent.cancelRequest();
+  }
+
+  /**
+   * No-op for backwards compatibility
+   * SSE doesn't require explicit connect/disconnect
+   */
+  connect(): void {
+    // No-op - SSE connects on-demand per request
+  }
+
+  /**
+   * No-op for backwards compatibility
+   */
   disconnect(): void {
-    this.websocket.disconnect();
-    this.connected = false;
+    this.bookingAgent.cancelRequest();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.disconnect();
+    this.bookingAgent.cancelRequest();
   }
 }
