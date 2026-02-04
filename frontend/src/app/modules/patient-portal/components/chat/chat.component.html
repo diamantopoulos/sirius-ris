@@ -1,0 +1,53 @@
+<div class="chat-container">
+  <mat-card class="chat-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>chat</mat-icon>
+        MediSlot Assistant
+      </mat-card-title>
+      <mat-card-subtitle>Book, check, or manage your appointments</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="message-container" #messageContainer>
+        <div *ngIf="(messages$ | async)?.length === 0" class="welcome-message">
+          <p>Hello! I'm your MediSlot scheduling assistant.</p>
+          <p>I can help you:</p>
+          <ul>
+            <li>Book a new appointment</li>
+            <li>Check your existing appointments</li>
+            <li>Reschedule an appointment</li>
+            <li>Cancel an appointment</li>
+          </ul>
+          <p>How can I help you today?</p>
+        </div>
+
+        <div *ngFor="let msg of messages$ | async"
+             class="message"
+             [ngClass]="{'user-message': msg.role === 'user', 'assistant-message': msg.role === 'assistant'}">
+          <div class="message-bubble">
+            <p>{{ msg.content }}</p>
+            <span class="message-time">{{ msg.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <div class="input-container">
+        <mat-form-field appearance="outline" class="message-input">
+          <mat-label>Type your message</mat-label>
+          <input matInput
+                 [(ngModel)]="newMessage"
+                 (keypress)="onKeyPress($event)"
+                 placeholder="e.g., I need to book a CT scan">
+        </mat-form-field>
+        <button mat-fab color="primary"
+                (click)="sendMessage()"
+                [disabled]="!newMessage.trim()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+</div>

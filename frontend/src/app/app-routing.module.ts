@@ -42,6 +42,9 @@ const routes: Routes = [
   { path: 'logs', loadChildren: () => import('@modules/logs/logs.module').then( m => m.LogsModule ), canActivate: [AuthGuard] },
   { path: 'users', loadChildren: () => import('@modules/users/users.module').then( m => m.UsersModule ), canActivate: [AuthGuard] },
 
+  // Patient Portal:
+  { path: 'patient-portal', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ), canActivate: [AuthGuard] },
+
   // Settings:
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
 
