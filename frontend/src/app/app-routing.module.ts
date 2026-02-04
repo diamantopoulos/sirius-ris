@@ -15,6 +15,9 @@ const routes: Routes = [
   { path: 'signin', loadChildren: () => import('@auth/auth.module').then( m => m.AuthModule ) },
   { path: '', redirectTo: 'signin', pathMatch: 'full' }, // Redirection from main page to signin.
 
+  // Public patient registration:
+  { path: 'register', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ) },
+
   // Start Page:
   { path: 'start', component: StartPageComponent, canActivate: [AuthGuard] },
 

@@ -1,6 +1,7 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { PatientPortalRoutingModule } from '@modules/patient-portal/patient-portal-routing.module';
 import { AppInitializer } from '@app/app-initializer';
@@ -8,16 +9,20 @@ import { SharedModule } from '@shared/shared.module';
 import { SharedMaterialModule } from '@shared/shared-material.module';
 
 import { ChatComponent } from '@modules/patient-portal/components/chat/chat.component';
+import { RegisterComponent } from '@modules/patient-portal/components/register/register.component';
 import { WebsocketService } from '@modules/patient-portal/services/websocket.service';
 import { ChatService } from '@modules/patient-portal/services/chat.service';
 
 @NgModule({
   declarations: [
-    ChatComponent
+    ChatComponent,
+    RegisterComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
     PatientPortalRoutingModule,
     SharedModule,
     SharedMaterialModule

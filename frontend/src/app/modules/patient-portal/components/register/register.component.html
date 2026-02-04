@@ -1,0 +1,113 @@
+<div class="register-container">
+  <mat-card class="register-card">
+    <mat-card-header>
+      <mat-card-title>Patient Registration</mat-card-title>
+      <mat-card-subtitle>Create your MediSlot account to book appointments</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="success" class="success-message">
+        <mat-icon>check_circle</mat-icon>
+        <p>Registration successful! Redirecting to login...</p>
+      </div>
+
+      <form *ngIf="!success" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="error" class="error-message">
+          <mat-icon>error</mat-icon>
+          {{ error }}
+        </div>
+
+        <h3>Personal Information</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="name">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="surname">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Date of Birth</mat-label>
+            <input matInput type="date" formControlName="birth_date">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Gender</mat-label>
+            <mat-select formControlName="gender">
+              <mat-option value="M">Male</mat-option>
+              <mat-option value="F">Female</mat-option>
+              <mat-option value="O">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <h3>Identification</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Country</mat-label>
+            <mat-select formControlName="doc_country_code">
+              <mat-option *ngFor="let country of countryCodes" [value]="country.code">
+                {{ country.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Document Type</mat-label>
+            <mat-select formControlName="doc_type">
+              <mat-option *ngFor="let docType of documentTypes" [value]="docType.code">
+                {{ docType.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Document Number</mat-label>
+          <input matInput formControlName="document">
+          <mat-hint>This will be your login ID</mat-hint>
+        </mat-form-field>
+
+        <h3>Create Password</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput type="password" formControlName="confirmPassword">
+          </mat-form-field>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit"
+                [disabled]="registerForm.invalid || loading">
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+          <span *ngIf="!loading">Create Account</span>
+        </button>
+
+        <p class="login-link">
+          Already have an account? <a routerLink="/signin">Sign in</a>
+        </p>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
