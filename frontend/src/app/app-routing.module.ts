@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 //Auth Guard:
 import { AuthGuard } from '@guards/auth.guard';
+import { PatientGuard } from '@guards/patient.guard';
 
 //Shared components:
 import { StartPageComponent } from '@shared/components/start-page/start-page.component';
@@ -43,7 +44,7 @@ const routes: Routes = [
   { path: 'users', loadChildren: () => import('@modules/users/users.module').then( m => m.UsersModule ), canActivate: [AuthGuard] },
 
   // Patient Portal:
-  { path: 'patient-portal', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ), canActivate: [AuthGuard] },
+  { path: 'patient-portal', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ), canActivate: [PatientGuard] },
 
   // Settings:
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
