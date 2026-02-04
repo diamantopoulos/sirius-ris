@@ -51,9 +51,9 @@
           <mat-form-field appearance="outline">
             <mat-label>Gender</mat-label>
             <mat-select formControlName="gender">
-              <mat-option value="M">Male</mat-option>
-              <mat-option value="F">Female</mat-option>
-              <mat-option value="O">Other</mat-option>
+              <mat-option value="1">Male</mat-option>
+              <mat-option value="2">Female</mat-option>
+              <mat-option value="3">Other</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -63,8 +63,9 @@
           <mat-form-field appearance="outline">
             <mat-label>Country</mat-label>
             <mat-select formControlName="doc_country_code">
-              <mat-option *ngFor="let country of countryCodes" [value]="country.code">
-                {{ country.name }}
+              <mat-option *ngFor="let currentCode of getKeys(country_codes, true)" [value]="currentCode">
+                <span class="flag-icon flag-icon-{{ country_codes[currentCode].alpha_2 | lowercase }}"></span>&nbsp;
+                {{ country_codes[currentCode].name }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -72,8 +73,8 @@
           <mat-form-field appearance="outline">
             <mat-label>Document Type</mat-label>
             <mat-select formControlName="doc_type">
-              <mat-option *ngFor="let docType of documentTypes" [value]="docType.code">
-                {{ docType.name }}
+              <mat-option *ngFor="let currentDocTypeKey of documentTypesKeys" [value]="currentDocTypeKey">
+                {{ ('DOCUMENT_TYPES.' + currentDocTypeKey) | i18n }}
               </mat-option>
             </mat-select>
           </mat-form-field>

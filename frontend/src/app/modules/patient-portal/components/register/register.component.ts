@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SharedPropertiesService } from '@shared/services/shared-properties.service';
+import { SharedFunctionsService } from '@shared/services/shared-functions.service';
+import { I18nService } from '@shared/services/i18n.service';
+import { ISO_3166, objectKeys } from '@env/environment';
 
 @Component({
   selector: 'app-register',
@@ -15,39 +18,36 @@ export class RegisterComponent {
   error = '';
   success = false;
 
-  // Document types from sirius-ris
-  documentTypes = [
-    { code: 'DNI', name: 'National ID' },
-    { code: 'PASSPORT', name: 'Passport' },
-    { code: 'DRIVER', name: 'Driver License' }
-  ];
-
-  // Country codes (simplified list)
-  countryCodes = [
-    { code: 'US', name: 'United States' },
-    { code: 'CA', name: 'Canada' },
-    { code: 'MX', name: 'Mexico' },
-    { code: 'GB', name: 'United Kingdom' }
-  ];
+  // Use same data as signin form
+  public country_codes: any = ISO_3166;
+  public documentTypesKeys: string[] = objectKeys.documentTypesKeys;
+  public getKeys: any;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private router: Router,
-    private sharedProp: SharedPropertiesService
+    public sharedProp: SharedPropertiesService,
+    private sharedFunctions: SharedFunctionsService,
+    public i18n: I18nService
   ) {
+    this.getKeys = this.sharedFunctions.getKeys;
+    // Get defaults from app settings if available
+    const defaultCountry = this.sharedProp.mainSettings?.appSettings?.default_country || '858';
+    const defaultDocType = this.sharedProp.mainSettings?.appSettings?.default_doc_type || '1';
+
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       surname: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
-      doc_country_code: ['US', Validators.required],
-      doc_type: ['DNI', Validators.required],
+      doc_country_code: [defaultCountry, Validators.required],
+      doc_type: [defaultDocType, Validators.required],
       document: ['', [Validators.required, Validators.minLength(5)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       birth_date: ['', Validators.required],
-      gender: ['M', Validators.required]
+      gender: ['1', Validators.required]  // Use numeric like sirius-ris (1=M, 2=F)
     });
   }
 

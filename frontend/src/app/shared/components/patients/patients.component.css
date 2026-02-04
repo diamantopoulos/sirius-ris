@@ -6,3 +6,18 @@
     background-color: #232338;
     padding: 6px;
 }
+
+.patient-actions {
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.patient-actions button {
+    font-size: 16px;
+    padding: 10px 30px;
+}
+
+.patient-actions mat-icon {
+    margin-right: 8px;
+}
