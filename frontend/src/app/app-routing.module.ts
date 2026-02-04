@@ -15,8 +15,8 @@ const routes: Routes = [
   { path: 'signin', loadChildren: () => import('@auth/auth.module').then( m => m.AuthModule ) },
   { path: '', redirectTo: 'signin', pathMatch: 'full' }, // Redirection from main page to signin.
 
-  // Public patient registration:
-  { path: 'register', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ) },
+  // Public patient registration (redirects to patient-portal/register):
+  { path: 'register', redirectTo: 'patient-portal/register', pathMatch: 'full' },
 
   // Start Page:
   { path: 'start', component: StartPageComponent, canActivate: [AuthGuard] },
@@ -46,8 +46,8 @@ const routes: Routes = [
   { path: 'logs', loadChildren: () => import('@modules/logs/logs.module').then( m => m.LogsModule ), canActivate: [AuthGuard] },
   { path: 'users', loadChildren: () => import('@modules/users/users.module').then( m => m.UsersModule ), canActivate: [AuthGuard] },
 
-  // Patient Portal:
-  { path: 'patient-portal', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ), canActivate: [PatientGuard] },
+  // Patient Portal (guard on child routes - chat requires auth, register is public):
+  { path: 'patient-portal', loadChildren: () => import('@modules/patient-portal/patient-portal.module').then( m => m.PatientPortalModule ) },
 
   // Settings:
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
