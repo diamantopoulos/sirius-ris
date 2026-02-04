@@ -1,0 +1,87 @@
+.patient-home-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.welcome-section h1 {
+  color: #1976d2;
+  margin-bottom: 10px;
+}
+
+.welcome-section p {
+  color: #666;
+  font-size: 1.1em;
+}
+
+.booking-options {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.booking-card {
+  width: 400px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.booking-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+  font-size: 40px !important;
+  width: 50px !important;
+  height: 50px !important;
+  line-height: 50px !important;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+  text-align: center;
+}
+
+.chat-card .card-icon {
+  color: #1976d2;
+}
+
+.calendar-card .card-icon {
+  color: #7b1fa2;
+}
+
+.booking-card mat-card-content {
+  min-height: 150px;
+}
+
+.booking-card mat-card-content ul {
+  padding-left: 20px;
+  color: #666;
+}
+
+.booking-card mat-card-content li {
+  margin-bottom: 8px;
+}
+
+.booking-card mat-card-actions {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .booking-options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .booking-card {
+    width: 100%;
+    max-width: 400px;
+  }
+}

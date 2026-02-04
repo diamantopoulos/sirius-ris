@@ -1,0 +1,169 @@
+<span *ngIf="sharedProp.current_datetime && sharedProp.current_slot; then thenBlockValid else elseBlockInvalid"></span>
+
+<ng-template #thenBlockValid>
+  <div class="confirm-booking form-element">
+    <h2 class="section-title">
+      <mat-icon>check_circle</mat-icon>
+      {{ 'PATIENT_PORTAL.BOOKING.CONFIRM_TITLE' | i18n }}
+    </h2>
+
+    <!-- Appointment Summary -->
+    <div class="appointment-summary">
+      <h4 class="summary-title">{{ 'PATIENT_PORTAL.BOOKING.APPOINTMENT_SUMMARY' | i18n }}</h4>
+
+      <div class="summary-grid">
+        <!-- Service -->
+        <div class="summary-card" *ngIf="sharedProp.current_imaging">
+          <mat-icon>business</mat-icon>
+          <div class="card-content">
+            <span class="card-label">{{ 'PATIENT_PORTAL.BOOKING.SERVICE' | i18n }}</span>
+            <span class="card-value">
+              {{ sharedProp.current_imaging.organization.short_name }} ►
+              {{ sharedProp.current_imaging.branch.short_name }} ►
+              {{ sharedProp.current_imaging.service.name }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Procedure -->
+        <div class="summary-card" *ngIf="sharedProp.current_procedure">
+          <mat-icon>health_and_safety</mat-icon>
+          <div class="card-content">
+            <span class="card-label">{{ 'PATIENT_PORTAL.BOOKING.PROCEDURE' | i18n }}</span>
+            <span class="card-value">{{ sharedProp.current_procedure.name }}</span>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="summary-card" *ngIf="sharedProp.current_datetime">
+          <mat-icon>calendar_today</mat-icon>
+          <div class="card-content">
+            <span class="card-label">{{ 'PATIENT_PORTAL.BOOKING.DATE' | i18n }}</span>
+            <span class="card-value">{{ sharedProp.current_datetime.start | date:"dd/MM/yyyy":"UTC" }}</span>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="summary-card" *ngIf="sharedProp.current_datetime">
+          <mat-icon>schedule</mat-icon>
+          <div class="card-content">
+            <span class="card-label">{{ 'PATIENT_PORTAL.BOOKING.TIME' | i18n }}</span>
+            <span class="card-value">
+              {{ sharedProp.current_datetime.start | date:"HH:mm":"UTC" }} -
+              {{ sharedProp.current_datetime.end | date:"HH:mm":"UTC" }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Equipment -->
+        <div class="summary-card" *ngIf="sharedProp.current_equipment">
+          <mat-icon>medical_services</mat-icon>
+          <div class="card-content">
+            <span class="card-label">{{ 'PATIENT_PORTAL.BOOKING.EQUIPMENT' | i18n }}</span>
+            <span class="card-value">{{ sharedProp.current_equipment.details?.name || '-' }}</span>
+          </div>
+        </div>
+
+        <!-- Duration -->
+        <div class="summary-card" *ngIf="sharedProp.current_equipment">
+          <mat-icon>timer</mat-icon>
+          <div class="card-content">
+            <span class="card-label">{{ 'PATIENT_PORTAL.BOOKING.DURATION' | i18n }}</span>
+            <span class="card-value">{{ sharedProp.current_equipment.duration }} min.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preparation Instructions -->
+    <div class="preparation-info" *ngIf="sharedProp.current_procedure?.preparation">
+      <h4>
+        <mat-icon>info</mat-icon>
+        {{ 'PATIENT_PORTAL.BOOKING.PREPARATION_TITLE' | i18n }}
+      </h4>
+      <div class="preparation-content" [innerHTML]="sharedProp.current_procedure.preparation"></div>
+    </div>
+
+    <!-- Contact & Health Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-section">
+        <h4>{{ 'PATIENT_PORTAL.BOOKING.CONTACT_INFO_TITLE' | i18n }}</h4>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>{{ 'PATIENT_PORTAL.BOOKING.CONTACT_PHONE' | i18n }}</mat-label>
+          <input matInput formControlName="contact" type="tel" placeholder="{{ 'PATIENT_PORTAL.BOOKING.CONTACT_PLACEHOLDER' | i18n }}">
+          <mat-icon matSuffix>phone</mat-icon>
+          <mat-error *ngIf="form.controls['contact'].hasError('required')">
+            {{ 'PATIENT_PORTAL.BOOKING.CONTACT_REQUIRED' | i18n }}
+          </mat-error>
+          <mat-error *ngIf="form.controls['contact'].hasError('minlength')">
+            {{ 'PATIENT_PORTAL.BOOKING.CONTACT_MIN_LENGTH' | i18n }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-section">
+        <h4>{{ 'PATIENT_PORTAL.BOOKING.BASIC_HEALTH_TITLE' | i18n }}</h4>
+
+        <div class="health-inputs">
+          <mat-form-field appearance="fill">
+            <mat-label>{{ 'PATIENT_PORTAL.BOOKING.HEIGHT' | i18n }}</mat-label>
+            <input matInput formControlName="height" type="number" min="30" max="250">
+            <span matSuffix>cm</span>
+            <mat-error *ngIf="form.controls['height'].hasError('required')">
+              {{ 'PATIENT_PORTAL.BOOKING.HEIGHT_REQUIRED' | i18n }}
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>{{ 'PATIENT_PORTAL.BOOKING.WEIGHT' | i18n }}</mat-label>
+            <input matInput formControlName="weight" type="number" min="1" max="500">
+            <span matSuffix>kg</span>
+            <mat-error *ngIf="form.controls['weight'].hasError('required')">
+              {{ 'PATIENT_PORTAL.BOOKING.WEIGHT_REQUIRED' | i18n }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Terms Acceptance -->
+      <div class="terms-section">
+        <mat-checkbox formControlName="accept_terms" color="primary">
+          {{ 'PATIENT_PORTAL.BOOKING.ACCEPT_TERMS' | i18n }}
+        </mat-checkbox>
+        <mat-error *ngIf="form.controls['accept_terms'].touched && form.controls['accept_terms'].hasError('required')">
+          {{ 'PATIENT_PORTAL.BOOKING.TERMS_REQUIRED' | i18n }}
+        </mat-error>
+      </div>
+
+      <!-- Informed Consent Notice -->
+      <div class="consent-notice" *ngIf="sharedProp.current_procedure?.informed_consent">
+        <mat-icon>assignment</mat-icon>
+        <span>{{ 'PATIENT_PORTAL.BOOKING.CONSENT_NOTICE' | i18n }}</span>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button mat-flat-button type="button" color="accent" (click)="onBack()" [disabled]="isSubmitting">
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'PATIENT_PORTAL.BOOKING.BACK_BUTTON' | i18n }}
+        </button>
+        <button mat-flat-button type="submit" color="primary" [disabled]="!form.valid || isSubmitting">
+          <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+          <mat-icon *ngIf="!isSubmitting">check</mat-icon>
+          {{ 'PATIENT_PORTAL.BOOKING.CONFIRM_BUTTON' | i18n }}
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #elseBlockInvalid>
+  <div class="error-container">
+    <mat-icon class="error-icon">event_busy</mat-icon>
+    <h4>{{ 'PATIENT_PORTAL.BOOKING.NO_SLOT_SELECTED' | i18n }}</h4>
+    <button mat-flat-button type="button" color="primary" routerLink="/patient-portal/booking/slot">
+      {{ 'PATIENT_PORTAL.BOOKING.GO_TO_SLOT' | i18n }}
+    </button>
+  </div>
+</ng-template>

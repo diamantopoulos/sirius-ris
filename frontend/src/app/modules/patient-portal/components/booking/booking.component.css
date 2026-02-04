@@ -1,0 +1,119 @@
+.booking-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Step Indicator */
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding: 20px 0;
+  background-color: var(--base-color-03);
+  border-radius: 8px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 120px;
+}
+
+.step-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--soft-color-01);
+  color: var(--opposite-color-02);
+  transition: all 0.3s ease;
+}
+
+.step.active .step-icon {
+  background-color: var(--pink-intense);
+  color: #fff;
+}
+
+.step.completed .step-icon {
+  background-color: var(--green-highlighted);
+  color: #fff;
+}
+
+.step-label {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--opposite-color-01);
+}
+
+.step.active .step-label {
+  color: var(--pink-intense);
+  font-weight: 500;
+}
+
+.step.completed .step-label {
+  color: var(--green-highlighted);
+}
+
+.step-connector {
+  position: absolute;
+  top: 25px;
+  left: calc(50% + 30px);
+  width: calc(100% - 60px);
+  height: 2px;
+  background-color: var(--soft-color-01);
+}
+
+.step.completed .step-connector {
+  background-color: var(--green-highlighted);
+}
+
+/* Patient Info Bar */
+.patient-info-bar {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: var(--current-wrap-bg-color);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.patient-info-bar mat-icon {
+  margin-right: 10px;
+  color: var(--pink-intense);
+}
+
+.patient-name {
+  font-weight: 500;
+  color: var(--opposite-color-01);
+}
+
+/* Booking Content */
+.booking-content {
+  min-height: 400px;
+  background-color: var(--base-color-03);
+  border-radius: 8px;
+  padding: 20px;
+  color: var(--opposite-color-01);
+}
+
+/* Booking Actions */
+.booking-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--soft-color-01);
+}
+
+.booking-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

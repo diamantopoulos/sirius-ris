@@ -11,7 +11,7 @@ import { I18nService } from '@shared/services/i18n.service';                    
 import { FullCalendarComponent, CalendarOptions } from '@fullcalendar/angular';             // FullCalendar Options
 import allLocales from '@fullcalendar/core/locales-all';                                    // FullCalendar Locale LANG
 import { EventApi } from '@fullcalendar/core';                                              // To manipulate events (overbooking)
-import { map, mergeMap, filter } from 'rxjs/operators';                                     // Reactive Extensions (RxJS)
+import { map, mergeMap } from 'rxjs/operators';                                              // Reactive Extensions (RxJS)
 import { regexObjectId, ISO_3166, objectKeys } from '@env/environment';                     // Enviroments
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -357,9 +357,6 @@ export class SelectSlotComponent implements OnInit {
           //Return response:
           return res;
         }),
-
-        //Filter that only NO success cases continue:
-        filter((res: any) => res.success !== true),
 
         //Search appointments - FullCalendar events (Return observable):
         mergeMap(() => this.sharedFunctions.findRxJS('appointments', this.appointmentsParams)),

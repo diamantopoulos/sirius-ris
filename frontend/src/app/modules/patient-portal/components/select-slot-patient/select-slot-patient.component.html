@@ -1,0 +1,133 @@
+<span *ngIf="sharedProp.current_imaging && sharedProp.current_modality && sharedProp.current_procedure; then thenBlockCurrentObj else elseBlockCurrentObj"></span>
+
+<ng-template #thenBlockCurrentObj>
+  <div class="slot-selection form-element">
+    <h2 class="section-title">
+      <mat-icon>event_available</mat-icon>
+      {{ 'PATIENT_PORTAL.BOOKING.SELECT_SLOT_TITLE' | i18n }}
+    </h2>
+
+    <!-- Selected Procedure Summary -->
+    <div class="procedure-summary">
+      <div class="summary-item">
+        <span class="summary-label">{{ 'PATIENT_PORTAL.BOOKING.SERVICE' | i18n }}:</span>
+        <span class="summary-value">
+          {{ sharedProp.current_imaging.organization.short_name }} ►
+          {{ sharedProp.current_imaging.branch.short_name }} ►
+          {{ sharedProp.current_imaging.service.name }}
+        </span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">{{ 'PATIENT_PORTAL.BOOKING.PROCEDURE' | i18n }}:</span>
+        <span class="summary-value badge-alt">{{ sharedProp.current_procedure.name }}</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Calendar Container -->
+    <div class="calendar-container">
+      <!-- Hidden Datepicker -->
+      <mat-form-field appearance="fill" id="invisible-datepicker" class="invisible-datepicker" (click)="picker.open()">
+        <mat-label>{{ 'PATIENT_PORTAL.BOOKING.SELECT_DATE' | i18n }}</mat-label>
+        <input matInput [matDatepicker]="picker" [min]="minDate" [max]="maxDate" (keydown)="false" (dateChange)="onChangeDate($event)">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- FullCalendar -->
+      <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+
+      <!-- Equipment Filter Buttons -->
+      <div class="equipment-buttons">
+        <button mat-flat-button type="button" (click)="setResources('ALL')">
+          {{ 'PATIENT_PORTAL.BOOKING.ALL_EQUIPMENT' | i18n }}
+        </button>
+        <span *ngFor="let currentResource of calendarResources">
+          <button mat-flat-button type="button" color="accent" (click)="setResources(currentResource.id)">
+            {{ currentResource.title.split('|')[0] }}
+          </button>
+        </span>
+      </div>
+    </div>
+
+    <!-- Selected Slot Info -->
+    <div class="slot-info-container">
+      <h4 class="info-title">{{ 'PATIENT_PORTAL.BOOKING.SELECTED_SLOT' | i18n }}</h4>
+
+      <div class="info-grid" [class.unselected]="selectedEquipment == undefined">
+        <!-- Equipment -->
+        <div class="info-item">
+          <mat-icon>medical_services</mat-icon>
+          <div class="info-content">
+            <span class="info-label">{{ 'PATIENT_PORTAL.BOOKING.EQUIPMENT' | i18n }}</span>
+            <span class="info-value" *ngIf="selectedEquipment">{{ selectedEquipment.details?.name || '-' }}</span>
+            <span class="info-value" *ngIf="!selectedEquipment">{{ 'PATIENT_PORTAL.BOOKING.NOT_SELECTED' | i18n }}</span>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="info-item">
+          <mat-icon>calendar_today</mat-icon>
+          <div class="info-content">
+            <span class="info-label">{{ 'PATIENT_PORTAL.BOOKING.DATE' | i18n }}</span>
+            <span class="info-value" *ngIf="selectedStart">{{ selectedStart | date:"dd/MM/yyyy":"UTC" }}</span>
+            <span class="info-value" *ngIf="!selectedStart">{{ 'PATIENT_PORTAL.BOOKING.NOT_SELECTED' | i18n }}</span>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="info-item">
+          <mat-icon>schedule</mat-icon>
+          <div class="info-content">
+            <span class="info-label">{{ 'PATIENT_PORTAL.BOOKING.TIME' | i18n }}</span>
+            <span class="info-value" *ngIf="selectedStart && selectedEnd">
+              {{ selectedStart | date:"HH:mm":"UTC" }} - {{ selectedEnd | date:"HH:mm":"UTC" }}
+            </span>
+            <span class="info-value" *ngIf="!selectedStart">{{ 'PATIENT_PORTAL.BOOKING.NOT_SELECTED' | i18n }}</span>
+          </div>
+        </div>
+
+        <!-- Duration -->
+        <div class="info-item">
+          <mat-icon>timer</mat-icon>
+          <div class="info-content">
+            <span class="info-label">{{ 'PATIENT_PORTAL.BOOKING.DURATION' | i18n }}</span>
+            <span class="info-value" *ngIf="selectedEquipment">{{ selectedEquipment.duration }} min.</span>
+            <span class="info-value" *ngIf="!selectedEquipment">{{ 'PATIENT_PORTAL.BOOKING.NOT_SELECTED' | i18n }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Selection Button -->
+      <div class="delete-selection" *ngIf="selectedEquipment && selectedStart && selectedEnd && selectedSlot">
+        <button mat-flat-button type="button" color="warn" (click)="onDelete();">
+          <mat-icon>delete_forever</mat-icon>
+          {{ 'PATIENT_PORTAL.BOOKING.DELETE_SELECTION' | i18n }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-flat-button type="button" color="accent" (click)="onBack()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'PATIENT_PORTAL.BOOKING.BACK_BUTTON' | i18n }}
+      </button>
+      <button mat-flat-button type="button" color="primary" (click)="onSubmit()" [disabled]="!(selectedEquipment && selectedStart && selectedEnd && selectedSlot)">
+        {{ 'PATIENT_PORTAL.BOOKING.NEXT_BUTTON' | i18n }}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #elseBlockCurrentObj>
+  <div class="error-container">
+    <mat-icon class="error-icon">search_off</mat-icon>
+    <h4>{{ 'PATIENT_PORTAL.BOOKING.NO_PROCEDURE_SELECTED' | i18n }}</h4>
+    <button mat-flat-button type="button" color="primary" routerLink="/patient-portal/booking/procedure">
+      {{ 'PATIENT_PORTAL.BOOKING.GO_TO_PROCEDURE' | i18n }}
+    </button>
+  </div>
+</ng-template>

@@ -1,0 +1,93 @@
+<div class="procedure-selection form-element">
+  <h2 class="section-title">
+    <mat-icon>health_and_safety</mat-icon>
+    {{ 'PATIENT_PORTAL.BOOKING.SELECT_PROCEDURE_TITLE' | i18n }}
+  </h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-content">
+      <!-- Service Selection -->
+      <div class="form-section">
+        <h4>{{ 'COMMON.SERVICE_LABEL' | i18n }}</h4>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>{{ 'COMMON.SERVICE_LABEL' | i18n }}</mat-label>
+          <mat-select formControlName="domain" (closed)="onChangeService()" placeholder="{{ 'PATIENT_PORTAL.BOOKING.SERVICE_PLACEHOLDER' | i18n }}">
+            <div *ngFor="let currentService of availableServices">
+              <div *ngFor="let currentBranch of availableBranches">
+                <div *ngFor="let currentOrganization of availableOrganizations">
+                  <mat-option
+                    (click)="setBranch({ '_id': currentOrganization._id, 'short_name': currentOrganization.short_name }, { '_id': currentBranch._id, 'short_name': currentBranch.short_name }, { '_id': currentService._id, 'name': currentService.name }, currentService.fk_modality)"
+                    *ngIf="currentBranch.fk_organization == currentOrganization._id && currentService.fk_branch == currentBranch._id"
+                    value="{{ currentOrganization._id + '.' + currentBranch._id + '.' + currentService._id }}">
+                    {{ currentOrganization.short_name }} ► {{ currentBranch.short_name }} ► {{ currentService.name }}
+                  </mat-option>
+                </div>
+              </div>
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Category Selection -->
+      <div class="form-section">
+        <h4>{{ 'PATIENT_PORTAL.BOOKING.CATEGORY_LABEL' | i18n }}</h4>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>{{ 'PATIENT_PORTAL.BOOKING.CATEGORY_LABEL' | i18n }}</mat-label>
+          <mat-select formControlName="id_category" (closed)="onChangeCategory()" placeholder="{{ 'PATIENT_PORTAL.BOOKING.CATEGORY_PLACEHOLDER' | i18n }}">
+            <div *ngFor="let currentCategory of availableCategories">
+              <mat-option (click)="setProceduresIN(currentCategory.fk_procedures)" value="{{ currentCategory._id }}">
+                {{ currentCategory.name }}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Procedure Selection -->
+      <div class="form-section">
+        <h4>{{ 'PATIENT_PORTAL.BOOKING.PROCEDURE_LABEL' | i18n }}</h4>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>{{ 'PATIENT_PORTAL.BOOKING.PROCEDURE_LABEL' | i18n }}</mat-label>
+          <mat-select formControlName="fk_procedure" placeholder="{{ 'PATIENT_PORTAL.BOOKING.PROCEDURE_PLACEHOLDER' | i18n }}">
+            <div *ngFor="let currentProcedure of availableProcedures">
+              <mat-option value="{{ currentProcedure._id }}">
+                {{ currentProcedure.name }}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Procedure Info (if selected) -->
+      <div class="procedure-info" *ngIf="sharedProp.current_procedure">
+        <mat-divider></mat-divider>
+        <h4>{{ 'PATIENT_PORTAL.BOOKING.SELECTED_PROCEDURE' | i18n }}</h4>
+
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">{{ 'PATIENT_PORTAL.BOOKING.PROCEDURE_NAME' | i18n }}:</span>
+            <span class="info-value">{{ sharedProp.current_procedure.name }}</span>
+          </div>
+
+          <div class="info-row" *ngIf="sharedProp.current_procedure.preparation">
+            <span class="info-label">{{ 'PATIENT_PORTAL.BOOKING.PREPARATION' | i18n }}:</span>
+            <span class="info-value preparation-text" [innerHTML]="sharedProp.current_procedure.preparation"></span>
+          </div>
+
+          <div class="info-row" *ngIf="sharedProp.current_procedure.informed_consent">
+            <mat-icon class="consent-icon">assignment</mat-icon>
+            <span class="consent-text">{{ 'PATIENT_PORTAL.BOOKING.CONSENT_REQUIRED' | i18n }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-flat-button type="submit" color="primary" [disabled]="!form.valid">
+        {{ 'PATIENT_PORTAL.BOOKING.NEXT_BUTTON' | i18n }} &nbsp;
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </form>
+</div>

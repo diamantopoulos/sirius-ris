@@ -1,0 +1,54 @@
+<div class="patient-home-container">
+  <div class="welcome-section">
+    <h1>Welcome to MediSlot</h1>
+    <p>Choose how you'd like to book your appointment</p>
+  </div>
+
+  <div class="booking-options">
+    <!-- Chat-based Booking -->
+    <mat-card class="booking-card chat-card" (click)="goToChatBooking()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="card-icon">chat</mat-icon>
+        <mat-card-title>Chat Assistant</mat-card-title>
+        <mat-card-subtitle>Conversational booking experience</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Let our AI assistant help you schedule your appointment through a natural conversation.</p>
+        <ul>
+          <li>Natural language interaction</li>
+          <li>Guided booking process</li>
+          <li>Check or manage appointments</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary">
+          <mat-icon>chat</mat-icon>
+          Start Chat
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Calendar-based Booking -->
+    <mat-card class="booking-card calendar-card" (click)="goToCalendarBooking()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="card-icon">calendar_month</mat-icon>
+        <mat-card-title>Calendar Booking</mat-card-title>
+        <mat-card-subtitle>Visual slot selection</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Browse available time slots directly on our calendar and pick your preferred date and time.</p>
+        <ul>
+          <li>See all available slots</li>
+          <li>Visual calendar interface</li>
+          <li>Quick and direct booking</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="accent">
+          <mat-icon>calendar_month</mat-icon>
+          Open Calendar
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

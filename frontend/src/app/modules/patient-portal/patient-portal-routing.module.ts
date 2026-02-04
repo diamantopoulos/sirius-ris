@@ -1,12 +1,29 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PatientHomeComponent } from '@modules/patient-portal/components/home/home.component';
 import { ChatComponent } from '@modules/patient-portal/components/chat/chat.component';
 import { RegisterComponent } from '@modules/patient-portal/components/register/register.component';
+import { BookingComponent } from '@modules/patient-portal/components/booking/booking.component';
+import { SelectProcedurePatientComponent } from '@modules/patient-portal/components/select-procedure-patient/select-procedure-patient.component';
+import { SelectSlotPatientComponent } from '@modules/patient-portal/components/select-slot-patient/select-slot-patient.component';
+import { ConfirmBookingComponent } from '@modules/patient-portal/components/confirm-booking/confirm-booking.component';
 import { PatientGuard } from '@guards/patient.guard';
 
 const routes: Routes = [
-  { path: '', component: ChatComponent, canActivate: [PatientGuard] },
+  { path: '', component: PatientHomeComponent, canActivate: [PatientGuard] },
+  { path: 'chat', component: ChatComponent, canActivate: [PatientGuard] },
   { path: 'register', component: RegisterComponent },  // Public - no guard
+  {
+    path: 'booking',
+    component: BookingComponent,
+    canActivate: [PatientGuard],
+    children: [
+      { path: '', redirectTo: 'procedure', pathMatch: 'full' },
+      { path: 'procedure', component: SelectProcedurePatientComponent },
+      { path: 'slot', component: SelectSlotPatientComponent },
+      { path: 'confirm', component: ConfirmBookingComponent }
+    ]
+  }
 ];
 
 @NgModule({

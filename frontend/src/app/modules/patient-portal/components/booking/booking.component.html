@@ -1,0 +1,38 @@
+<div class="booking-container">
+  <!-- Step Indicator -->
+  <div class="step-indicator">
+    <div *ngFor="let step of steps; let i = index"
+         class="step"
+         [class.completed]="isStepCompleted(i)"
+         [class.active]="isStepActive(i)">
+      <div class="step-icon">
+        <mat-icon *ngIf="isStepCompleted(i)">check</mat-icon>
+        <mat-icon *ngIf="!isStepCompleted(i)">{{ step.icon }}</mat-icon>
+      </div>
+      <div class="step-label">{{ step.label | i18n }}</div>
+      <div class="step-connector" *ngIf="i < steps.length - 1"></div>
+    </div>
+  </div>
+
+  <!-- Patient Info Bar -->
+  <div class="patient-info-bar" *ngIf="sharedProp.current_patient">
+    <mat-icon>person</mat-icon>
+    <span class="patient-name">
+      {{ sharedProp.current_patient.person?.name_01 }}
+      {{ sharedProp.current_patient.person?.surname_01 }}
+    </span>
+  </div>
+
+  <!-- Router Outlet for child components -->
+  <div class="booking-content">
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- Cancel Button -->
+  <div class="booking-actions">
+    <button mat-flat-button type="button" (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+      {{ 'COMMON.CANCEL' | i18n }}
+    </button>
+  </div>
+</div>
