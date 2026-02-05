@@ -17,6 +17,7 @@ export class FooterComponent implements OnInit {
   public sirius_db_version        : string = 'unknown';
   public sirius_backend_version   : string = 'unknown';
   public sirius_frontend_version  : string = 'unknown';
+  public medislot_version         : string = '';
 
   //Inject services to the constructor:
   constructor(
@@ -31,8 +32,25 @@ export class FooterComponent implements OnInit {
       this.sirius_db_version = res.sirius_db.version;
       this.sirius_backend_version = res.sirius_backend.version;
     });
+
+    //Get MediSlot booking-agent version:
+    this.fetchMediSlotVersion();
   }
 
   ngOnInit(): void {}
+
+  //Fetch MediSlot version from booking-agent health endpoint:
+  private fetchMediSlotVersion(): void {
+    fetch(`${environment.bookingAgentUrl}/health`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.version) {
+          this.medislot_version = data.version;
+        }
+      })
+      .catch(err => {
+        console.warn('Could not fetch MediSlot version:', err);
+      });
+  }
 
 }

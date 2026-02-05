@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { SharedPropertiesService } from '@shared/services/shared-properties.service';
 import { SharedFunctionsService } from '@shared/services/shared-functions.service';
 import { I18nService } from '@shared/services/i18n.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-my-appointments',
@@ -30,7 +32,8 @@ export class MyAppointmentsComponent implements OnInit {
     public sharedFunctions: SharedFunctionsService,
     private i18n: I18nService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private http: HttpClient
   ) {
     // Get logged user info
     this.sharedProp.userLogged = this.sharedFunctions.getUserInfo();
@@ -175,6 +178,9 @@ export class MyAppointmentsComponent implements OnInit {
 
         this.sharedFunctions.save('update', 'appointments', appointment._id, data, ['status'], (res: any) => {
           if (res.success) {
+            //Send cancellation notification:
+            this.sendNotification('appointment_cancelled', appointment);
+
             this.sharedFunctions.sendMessage('Appointment cancelled successfully');
             this.loadAppointments();
           } else {
@@ -182,6 +188,32 @@ export class MyAppointmentsComponent implements OnInit {
           }
         });
       }
+    });
+  }
+
+  // Send notification to patient via notification-service
+  private sendNotification(type: string, appointment: any): void {
+    //Format date and time:
+    const appointmentDate = new Date(appointment.start);
+    const dateStr = appointmentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = appointmentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    const notificationPayload = {
+      patientId: this.patientId,
+      type: type,
+      appointmentId: appointment._id,
+      data: {
+        procedure: this.getProcedureName(appointment),
+        date: dateStr,
+        time: timeStr,
+        location: appointment.imaging?.service?.name || 'See portal for details'
+      }
+    };
+
+    const notificationUrl = environment.notificationServiceUrl || 'http://localhost:3004';
+    this.http.post(`${notificationUrl}/api/notify`, notificationPayload).subscribe({
+      next: () => console.log('Cancellation notification sent successfully'),
+      error: (err) => console.warn('Failed to send cancellation notification:', err.message)
     });
   }
 }

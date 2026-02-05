@@ -31,6 +31,7 @@ export class SelectSlotPatientComponent implements OnInit {
   private slotsParams               : any;
   private appointmentsParams        : any;
   private appointmentsDraftsParams  : any;
+  private myAppointmentsParams      : any;  // Patient's own appointments across ALL services
 
   //Set selected elements:
   public selectedEquipment    : any  | undefined;
@@ -283,6 +284,24 @@ export class SelectSlotPatientComponent implements OnInit {
         'proj[slot.equipment._id]': 1
       };
 
+      //Set MY appointments params - ALL patient's appointments across ALL services (to prevent double-booking):
+      this.myAppointmentsParams = {
+        'filter[patient._id]': this.sharedProp.userLogged.user_id,
+        'filter[flow_state]': 'A01',
+        'filter[status]': true,
+        'filter[start][$gte]': minDateString,
+        'filter[end][$lte]': maxDateString,
+        'proj[start]': 1,
+        'proj[end]': 1,
+        'proj[urgency]': 1,
+        'proj[procedure.name]': 1,
+        'proj[slot.equipment._id]': 1,
+        'proj[imaging.service._id]': 1
+      };
+
+      // Track equipment IDs that match current procedure:
+      let equipmentIdsForQuery: string[] = [];
+
       //Create slots observable:
       const obsSlots = this.sharedFunctions.findRxJS('slots', this.slotsParams).pipe(
         //Get equipments (resources) and slots (background events):
@@ -304,12 +323,14 @@ export class SelectSlotPatientComponent implements OnInit {
                       if(first_search == true && resourceDuplicated == undefined){
                         this.calendarResources.push(currentResource);
                       }
+                      // Track equipment ID for appointment query:
+                      if(!equipmentIdsForQuery.includes(res.data[key].equipment._id)){
+                        equipmentIdsForQuery.push(res.data[key].equipment._id);
+                      }
                     }
                   }));
                 }
                 registeredEquipments.push(res.data[key].equipment._id);
-                // Note: Removed slot._id filter to avoid URL too long (414) error
-                // Appointments/drafts are already filtered by org/branch/service/date range
                 this.calendarComponent.getApi().addEvent({
                   classNames: res.data[key]._id,
                   resourceId: res.data[key].equipment._id,
@@ -319,20 +340,78 @@ export class SelectSlotPatientComponent implements OnInit {
                   backgroundColor: slotBackgroundColor
                 });
               }));
+
+              // Add equipment filter to show ALL appointments on these equipments (prevents double-booking same equipment):
+              equipmentIdsForQuery.forEach((equipmentId, index) => {
+                this.appointmentsParams['filter[in][slot.equipment._id][' + index + ']'] = equipmentId;
+                this.appointmentsDraftsParams['filter[in][slot.equipment._id][' + index + ']'] = equipmentId;
+              });
             }
           }
           return res;
         }),
 
-        // Continue to fetch appointments after processing slots
+        // Fetch ALL of patient's appointments (across all services) to show their schedule:
+        mergeMap(() => this.sharedFunctions.findRxJS('appointments', this.myAppointmentsParams)),
+
+        map(async (res: any) => {
+          if(res.data){
+            if(res.data.length > 0){
+              await Promise.all(Object.keys(res.data).map((key) => {
+                // Skip the appointment being rescheduled:
+                if (this.isRescheduleMode && res.data[key]._id === this.rescheduleAppointmentId) {
+                  return;
+                }
+
+                // Check if this appointment's equipment is in our current resources:
+                const equipmentId = res.data[key].slot?.equipment?._id;
+                const isOnVisibleEquipment = equipmentId && equipmentIdsForQuery.includes(equipmentId);
+
+                // Show patient's own appointments with procedure name and distinct color:
+                let backgroundColor = '#1976d2';  // Blue for patient's own appointments
+                let borderColor = '#1565c0';
+                let textColor = '#fff';
+
+                if(res.data[key].urgency){
+                  backgroundColor = '#f44336';
+                  borderColor = '#f7594d';
+                }
+
+                // Add event - if equipment matches, show on that resource; otherwise show as blocking event
+                this.calendarComponent.getApi().addEvent({
+                  id: 'my-' + res.data[key]._id,
+                  resourceId: isOnVisibleEquipment ? equipmentId : equipmentIdsForQuery[0],  // Show on first resource if not matching
+                  title: '📅 ' + (res.data[key].procedure?.name || this.i18n.instant('PATIENT_PORTAL.BOOKING.MY_APPOINTMENT')),
+                  start: res.data[key].start.slice(0, -5),
+                  end: res.data[key].end.slice(0, -5),
+                  backgroundColor: backgroundColor,
+                  borderColor: borderColor,
+                  textColor: textColor,
+                  extendedProps: {
+                    isMyAppointment: true,
+                    appointmentId: res.data[key]._id
+                  }
+                });
+              }));
+            }
+          }
+          return res;
+        }),
+
+        // Continue to fetch other appointments on the equipment (from other patients):
         mergeMap(() => this.sharedFunctions.findRxJS('appointments', this.appointmentsParams)),
 
         map(async (res: any) => {
           if(res.data){
             if(res.data.length > 0){
               await Promise.all(Object.keys(res.data).map((key) => {
-                // Skip the appointment being rescheduled so its slot appears available
+                // Skip the appointment being rescheduled:
                 if (this.isRescheduleMode && res.data[key]._id === this.rescheduleAppointmentId) {
+                  return;
+                }
+                // Skip if already added as patient's own appointment:
+                const existingEvent = this.calendarComponent.getApi().getEventById('my-' + res.data[key]._id);
+                if (existingEvent) {
                   return;
                 }
 
@@ -557,6 +636,9 @@ export class SelectSlotPatientComponent implements OnInit {
 
   //--------------------------------------------------------------------------------------------------------------------//
   // IS OVERLAPPING:
+  // For patients, check overlap with:
+  // 1. Same equipment (another appointment is already booked there)
+  // 2. ANY of patient's own appointments (patient can't be in two places at once)
   //--------------------------------------------------------------------------------------------------------------------//
   async isOverlapping(inputDateTime: any, inputResource: string){
     let isOverlap = false;
@@ -568,9 +650,15 @@ export class SelectSlotPatientComponent implements OnInit {
         const currentStart = calendarEvents[parseInt(key, 10)]._instance?.range.start;
         const currentEnd = calendarEvents[parseInt(key, 10)]._instance?.range.end;
         const currentDateTime = this.sharedFunctions.datetimeFulCalendarFormater(currentStart, currentEnd);
+        const eventId = calendarEvents[parseInt(key, 10)]._def.publicId;
 
-        if(currentResource[0] == inputResource){
-          if(!(new Date(currentDateTime.start) >= new Date(inputDateTime.end) || new Date(currentDateTime.end) <= new Date(inputDateTime.start))){
+        // Check if times overlap:
+        const timesOverlap = !(new Date(currentDateTime.start) >= new Date(inputDateTime.end) || new Date(currentDateTime.end) <= new Date(inputDateTime.start));
+
+        if(timesOverlap){
+          // Block if: same equipment OR this is patient's own appointment (they can't be in two places)
+          const isMyAppointment = eventId.startsWith('my-');
+          if(currentResource[0] == inputResource || isMyAppointment){
             isOverlap = true;
           }
         }

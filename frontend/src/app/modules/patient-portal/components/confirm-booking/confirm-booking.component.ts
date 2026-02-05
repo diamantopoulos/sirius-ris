@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 //--------------------------------------------------------------------------------------------------------------------//
 // IMPORTS:
@@ -9,6 +10,7 @@ import { SharedPropertiesService } from '@shared/services/shared-properties.serv
 import { SharedFunctionsService } from '@shared/services/shared-functions.service';
 import { PatientBookingService } from '@modules/patient-portal/services/patient-booking.service';
 import { I18nService } from '@shared/services/i18n.service';
+import { environment } from '@env/environment';
 //--------------------------------------------------------------------------------------------------------------------//
 
 @Component({
@@ -35,6 +37,7 @@ export class ConfirmBookingComponent implements OnInit {
   //Inject services, components and router to the constructor:
   constructor(
     private router              : Router,
+    private http                : HttpClient,
     public formBuilder          : FormBuilder,
     public sharedProp           : SharedPropertiesService,
     public sharedFunctions      : SharedFunctionsService,
@@ -127,6 +130,9 @@ export class ConfirmBookingComponent implements OnInit {
           this.isSubmitting = false;
 
           if (res.success === true) {
+            //Send reschedule notification:
+            this.sendNotification('appointment_rescheduled', this.rescheduleAppointmentId!);
+
             //Clear reschedule data from sessionStorage:
             sessionStorage.removeItem('rescheduleAppointment');
             sessionStorage.removeItem('rescheduleAppointmentId');
@@ -188,6 +194,38 @@ export class ConfirmBookingComponent implements OnInit {
     } else {
       this.router.navigate(['/patient-portal/booking/slot']);
     }
+  }
+  //--------------------------------------------------------------------------------------------------------------------//
+
+
+  //--------------------------------------------------------------------------------------------------------------------//
+  // SEND NOTIFICATION:
+  //--------------------------------------------------------------------------------------------------------------------//
+  private sendNotification(type: string, appointmentId: string): void {
+    const userLogged = this.sharedFunctions.getUserInfo();
+
+    //Format date and time:
+    const appointmentDate = new Date(this.sharedProp.current_datetime?.start + '.000Z');
+    const dateStr = appointmentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = appointmentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    const notificationPayload = {
+      patientId: userLogged.user_id,
+      type: type,
+      appointmentId: appointmentId,
+      data: {
+        procedure: this.sharedProp.current_procedure?.name || 'Appointment',
+        date: dateStr,
+        time: timeStr,
+        location: this.sharedProp.current_imaging?.service?.name || 'See portal for details'
+      }
+    };
+
+    const notificationUrl = environment.notificationServiceUrl || 'http://localhost:3004';
+    this.http.post(`${notificationUrl}/api/notify`, notificationPayload).subscribe({
+      next: () => console.log('Notification sent successfully'),
+      error: (err) => console.warn('Failed to send notification:', err.message)
+    });
   }
   //--------------------------------------------------------------------------------------------------------------------//
 }

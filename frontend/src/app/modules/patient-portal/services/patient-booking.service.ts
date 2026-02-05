@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 //--------------------------------------------------------------------------------------------------------------------//
 // IMPORTS:
@@ -7,6 +8,7 @@ import { Router } from '@angular/router';
 import { SharedPropertiesService } from '@shared/services/shared-properties.service';
 import { SharedFunctionsService } from '@shared/services/shared-functions.service';
 import { I18nService } from '@shared/services/i18n.service';
+import { environment } from '@env/environment';
 //--------------------------------------------------------------------------------------------------------------------//
 
 @Injectable({
@@ -23,6 +25,7 @@ export class PatientBookingService {
   //Inject services to the constructor:
   constructor(
     private router          : Router,
+    private http            : HttpClient,
     public sharedProp       : SharedPropertiesService,
     private sharedFunctions : SharedFunctionsService,
     public i18n             : I18nService
@@ -151,8 +154,46 @@ export class PatientBookingService {
         this.sharedFunctions.delete('single', 'appointments_drafts', this.sharedProp.current_appointment_draft);
       }
 
+      //Send notification if successful:
+      if(res.success === true){
+        this.sendBookingNotification(res.data, 'appointment_booked');
+      }
+
       //Execute callback:
       callback(res);
+    });
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------//
+  // SEND BOOKING NOTIFICATION:
+  // Sends notification to patient via notification-service (Telegram, email, etc.)
+  //--------------------------------------------------------------------------------------------------------------------//
+  private sendBookingNotification(appointmentData: any, type: string): void {
+    const userLogged = this.sharedFunctions.getUserInfo();
+
+    //Format date and time from appointment datetime:
+    const appointmentDate = new Date(this.sharedProp.current_datetime?.start + '.000Z');
+    const dateStr = appointmentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = appointmentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    //Build notification payload (matching notification-service expected format):
+    const notificationPayload = {
+      patientId: userLogged.user_id,
+      type: type,
+      appointmentId: appointmentData._id,
+      data: {
+        procedure: this.sharedProp.current_procedure?.name || 'Appointment',
+        date: dateStr,
+        time: timeStr,
+        location: this.sharedProp.current_imaging?.service?.name || 'See portal for details'
+      }
+    };
+
+    //Send notification (fire and forget - don't block on result):
+    const notificationUrl = environment.notificationServiceUrl || 'http://localhost:3004';
+    this.http.post(`${notificationUrl}/api/notify`, notificationPayload).subscribe({
+      next: () => console.log('Notification sent successfully'),
+      error: (err) => console.warn('Failed to send notification:', err.message)
     });
   }
   //--------------------------------------------------------------------------------------------------------------------//

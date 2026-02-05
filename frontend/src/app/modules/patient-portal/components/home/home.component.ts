@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { SharedPropertiesService } from '@shared/services/shared-properties.service';
 import { SharedFunctionsService } from '@shared/services/shared-functions.service';
 import { I18nService } from '@shared/services/i18n.service';
+import { environment } from '@env/environment';
 //--------------------------------------------------------------------------------------------------------------------//
 
 @Component({
@@ -15,6 +16,9 @@ import { I18nService } from '@shared/services/i18n.service';
   styleUrls: ['./home.component.css']
 })
 export class PatientHomeComponent implements OnInit {
+  //MediSlot version:
+  medislotVersion: string = '';
+
   //Inject services to the constructor:
   constructor(
     private router          : Router,
@@ -32,9 +36,24 @@ export class PatientHomeComponent implements OnInit {
       add_button          : false,
       filters_form        : false
     });
+
+    //Fetch MediSlot version:
+    this.fetchMediSlotVersion();
   }
 
   ngOnInit(): void {}
+
+  //Fetch MediSlot version from booking-agent:
+  private fetchMediSlotVersion(): void {
+    fetch(`${environment.bookingAgentUrl}/health`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.version) {
+          this.medislotVersion = `v${data.version}`;
+        }
+      })
+      .catch(err => console.warn('Could not fetch MediSlot version:', err));
+  }
 
   //Navigate to my appointments:
   goToMyAppointments(): void {

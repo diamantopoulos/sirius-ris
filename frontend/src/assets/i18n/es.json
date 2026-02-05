@@ -2237,6 +2237,7 @@
       "DELETE_SELECTION": "Eliminar Selección",
       "BOOKED_SLOT": "Reservado",
       "RESERVED_SLOT": "En proceso",
+      "MY_APPOINTMENT": "Mi Cita",
       "NO_PROCEDURE_SELECTED": "No se ha seleccionado procedimiento",
       "GO_TO_PROCEDURE": "Ir a Selección de Procedimiento",
       "SELECT_DATE": "Seleccionar Fecha",

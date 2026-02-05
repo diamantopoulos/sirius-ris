@@ -2261,6 +2261,7 @@
       "DELETE_SELECTION": "Delete Selection",
       "BOOKED_SLOT": "Booked",
       "RESERVED_SLOT": "Reserved",
+      "MY_APPOINTMENT": "My Appointment",
       "NO_PROCEDURE_SELECTED": "No procedure selected",
       "GO_TO_PROCEDURE": "Go to Procedure Selection",
       "SELECT_DATE": "Select Date",

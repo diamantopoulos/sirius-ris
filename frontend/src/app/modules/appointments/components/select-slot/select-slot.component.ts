@@ -37,6 +37,9 @@ export class SelectSlotComponent implements OnInit {
   private appointmentsParams        : any;
   private appointmentsDraftsParams  : any;
 
+  //Track equipment IDs for appointment queries:
+  private equipmentIdsForQuery      : string[] = [];
+
   //Set selected elements:
   public selectedEquipment    : any  | undefined;
   public selectedStart        : Date | undefined;
@@ -294,6 +297,9 @@ export class SelectSlotComponent implements OnInit {
         'proj[overbooking]': 1
       };
 
+      //Reset equipment IDs for query:
+      this.equipmentIdsForQuery = [];
+
       //Create slots observable slots:
       const obsSlots = this.sharedFunctions.findRxJS('slots', this.slotsParams).pipe(
         //Get equipments (resources) and slots (background events):
@@ -329,16 +335,17 @@ export class SelectSlotComponent implements OnInit {
                       if(first_search == true && resourceDuplicated == undefined){
                         this.calendarResources.push(currentResource);
                       }
+
+                      //Register equipment ID for appointment query (only once per equipment):
+                      if(!this.equipmentIdsForQuery.includes(res.data[key].equipment._id)){
+                        this.equipmentIdsForQuery.push(res.data[key].equipment._id);
+                      }
                     }
                   }));
                 }
 
                 //Register equipment:
                 registeredEquipments.push(res.data[key].equipment._id);
-
-                //Register slots _id (IN Appointment and Appointments drafts condition):
-                this.appointmentsParams['filter[in][slot._id][' + key + ']'] = res.data[key]._id;
-                this.appointmentsDraftsParams['filter[in][slot._id][' + key + ']'] = res.data[key]._id;
 
                 //Add background events in calendar (Slots):
                 this.calendarComponent.getApi().addEvent({
@@ -351,6 +358,12 @@ export class SelectSlotComponent implements OnInit {
                 });
 
               }));
+
+              //Add equipment filter to appointment queries (shows ALL appointments on these equipments):
+              this.equipmentIdsForQuery.forEach((equipmentId, index) => {
+                this.appointmentsParams['filter[in][slot.equipment._id][' + index + ']'] = equipmentId;
+                this.appointmentsDraftsParams['filter[in][slot.equipment._id][' + index + ']'] = equipmentId;
+              });
             }
           }
 

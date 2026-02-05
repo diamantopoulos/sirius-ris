@@ -6,7 +6,8 @@
     <br/>
     <strong>Sirius RIS</strong><br/>
     <small>Frontend: {{ sirius_frontend_version }} | Backend: {{ sirius_backend_version }} | Database: {{ sirius_db_version }} </small><br/>
-    <small>opendicom</small><br/><br/>
+    <small *ngIf="medislot_version">MediSlot: {{ medislot_version }}</small>
+    <small *ngIf="!medislot_version">opendicom</small><br/><br/>
   </div>
 </div>
 <!-- ------------------------------------------------------------------------------------------------------------------------ -->
