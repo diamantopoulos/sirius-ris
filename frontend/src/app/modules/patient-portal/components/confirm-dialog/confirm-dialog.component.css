@@ -1,0 +1,35 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--pink-intense);
+  border-bottom: 2px solid var(--pink-intense);
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+
+.dialog-title mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #f57c00;
+}
+
+.dialog-content {
+  padding: 20px 0;
+}
+
+.dialog-content p {
+  font-size: 1em;
+  color: var(--opposite-color-01);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--soft-color-01);
+}

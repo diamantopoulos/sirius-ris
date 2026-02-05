@@ -1,4 +1,12 @@
-<span *ngIf="sharedProp.current_imaging && sharedProp.current_modality && sharedProp.current_procedure; then thenBlockCurrentObj else elseBlockCurrentObj"></span>
+<!-- Loading state for reschedule mode -->
+<div *ngIf="loadingReschedule" class="loading-container">
+  <mat-spinner diameter="40"></mat-spinner>
+  <p>Loading appointment data...</p>
+</div>
+
+<ng-container *ngIf="!loadingReschedule">
+  <span *ngIf="sharedProp.current_imaging && sharedProp.current_modality && sharedProp.current_procedure; then thenBlockCurrentObj else elseBlockCurrentObj"></span>
+</ng-container>
 
 <ng-template #thenBlockCurrentObj>
   <div class="slot-selection form-element">

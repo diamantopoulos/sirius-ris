@@ -153,6 +153,16 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     return result;
   }
 
+  /**
+   * TrackBy function for ngFor to prevent re-rendering messages
+   * that haven't changed (reduces flickering during streaming)
+   */
+  trackByMessage(index: number, msg: ChatMessage): string {
+    // Use index + role + streaming state as identity
+    // This prevents re-creating DOM elements during streaming
+    return `${index}-${msg.role}-${msg.isStreaming}`;
+  }
+
   getMessageSize(msg: ChatMessage): string {
     let totalSize = 0;
 

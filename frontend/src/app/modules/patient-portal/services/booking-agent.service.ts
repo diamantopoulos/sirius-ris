@@ -38,6 +38,11 @@ export interface SSEErrorEvent {
   message: string;
 }
 
+export interface SSEValidationCorrectionEvent {
+  reason: string;
+  correctedContent: string;
+}
+
 /**
  * Chat message format
  */
@@ -182,6 +187,7 @@ export class BookingAgentService implements OnDestroy {
     const decoder = new TextDecoder();
     let buffer = '';
     let streamedContent = '';
+    let correctedContent: string | undefined;
     let llmUsage: SSECompleteEvent['usage'] | undefined;
     const toolCalls: Array<{ name: string; result: string }> = [];
 
@@ -203,12 +209,25 @@ export class BookingAgentService implements OnDestroy {
           } else if (line.startsWith('data: ')) {
             const data = line.slice(6);
             if (data && currentEvent) {
-              const usage = this.handleSSEEvent(currentEvent, data, (token) => {
-                streamedContent += token;
-                this.updateLastMessage({ content: streamedContent });
-              }, toolCalls);
-              if (usage) {
-                llmUsage = usage;
+              const result = this.handleSSEEvent(
+                currentEvent,
+                data,
+                (token) => {
+                  streamedContent += token;
+                  this.updateLastMessage({ content: streamedContent });
+                },
+                toolCalls,
+                (content) => {
+                  // Validation failed - replace streamed content with corrected version
+                  correctedContent = content;
+                  this.updateLastMessage({ content: content });
+                }
+              );
+              if (result.usage) {
+                llmUsage = result.usage;
+              }
+              if (result.correctedContent) {
+                correctedContent = result.correctedContent;
               }
             }
           }
@@ -218,9 +237,10 @@ export class BookingAgentService implements OnDestroy {
       reader.releaseLock();
     }
 
-    // Finalize the message
+    // Finalize the message - use corrected content if validation failed
+    const finalContent = correctedContent || streamedContent || 'No response received.';
     this.updateLastMessage({
-      content: streamedContent || 'No response received.',
+      content: finalContent,
       isStreaming: false,
       toolCalls: toolCalls.length > 0 ? toolCalls : undefined
     });
@@ -230,14 +250,15 @@ export class BookingAgentService implements OnDestroy {
 
   /**
    * Handle individual SSE events
-   * @returns LLM usage if this was a complete event, undefined otherwise
+   * @returns Object with LLM usage and/or corrected content
    */
   private handleSSEEvent(
     event: string,
     dataStr: string,
     onToken: (token: string) => void,
-    toolCalls: Array<{ name: string; result: string }>
-  ): SSECompleteEvent['usage'] | undefined {
+    toolCalls: Array<{ name: string; result: string }>,
+    onValidationCorrection?: (correctedContent: string) => void
+  ): { usage?: SSECompleteEvent['usage']; correctedContent?: string } {
     try {
       const data = JSON.parse(dataStr);
 
@@ -255,9 +276,18 @@ export class BookingAgentService implements OnDestroy {
           toolCalls.push({ name: result.name, result: result.result });
           break;
 
+        case 'validation_correction':
+          // Response contained hallucinated data - replace with corrected content
+          const correction = data as SSEValidationCorrectionEvent;
+          console.warn('Validation correction received:', correction.reason);
+          if (onValidationCorrection) {
+            onValidationCorrection(correction.correctedContent);
+          }
+          return { correctedContent: correction.correctedContent };
+
         case 'complete':
           // Return LLM usage from complete event
-          return (data as SSECompleteEvent).usage;
+          return { usage: (data as SSECompleteEvent).usage };
 
         case 'error':
           console.error('SSE error:', (data as SSEErrorEvent).message);
@@ -270,7 +300,7 @@ export class BookingAgentService implements OnDestroy {
     } catch (e) {
       console.warn('Failed to parse SSE data:', dataStr);
     }
-    return undefined;
+    return {};
   }
 
   /**

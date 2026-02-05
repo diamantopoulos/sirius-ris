@@ -5,7 +5,8 @@
 export const environment = {
   production: true,
   version: '1.5.1',
-  bookingAgentUrl: '/api/booking-agent'  // Production: proxy through nginx
+  bookingAgentUrl: 'http://localhost:3003',  // TODO: Use nginx proxy in real production
+  notificationServiceUrl: 'http://localhost:3004'  // TODO: Use nginx proxy in real production
 };
 
 // Set ObjectId regular expression to validate ObjectIds:

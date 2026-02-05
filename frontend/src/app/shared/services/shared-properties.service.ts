@@ -82,6 +82,8 @@ export class SharedPropertiesService {
   public current_appointment        : string = '';
   public current_appointment_request: any;
   public current_overbooking        : boolean = false;
+  public current_contact            : any;
+  public current_private_health     : any;
 
   //Current operation objects for PET-CT cases:
   public current_modality_code_value  : string = '';

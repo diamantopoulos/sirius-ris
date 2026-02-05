@@ -56,7 +56,7 @@
       </div>
 
       <!-- Message List -->
-      <div *ngFor="let msg of messages$ | async; let i = index"
+      <div *ngFor="let msg of messages$ | async; let i = index; trackBy: trackByMessage"
            class="message-row"
            [class.user-row]="msg.role === 'user'"
            [class.assistant-row]="msg.role === 'assistant'"
@@ -106,11 +106,11 @@
               </div>
             </ng-container>
 
-            <!-- Message Content -->
-            <div *ngIf="msg.content" class="message-content" [innerHTML]="formatMessage(msg.content)">
+            <!-- Message Content (shown when NOT streaming) -->
+            <div *ngIf="!msg.isStreaming && msg.content" class="message-content" [innerHTML]="formatMessage(msg.content)">
             </div>
 
-            <!-- Streaming Content -->
+            <!-- Streaming Content (shown while streaming) -->
             <div *ngIf="msg.isStreaming && msg.content" class="message-content streaming">
               <span [innerHTML]="formatMessage(msg.content)"></span>
               <span class="cursor"></span>

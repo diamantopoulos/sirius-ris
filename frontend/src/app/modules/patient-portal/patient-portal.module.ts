@@ -2,6 +2,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 import { PatientPortalRoutingModule } from '@modules/patient-portal/patient-portal-routing.module';
 import { AppInitializer } from '@app/app-initializer';
@@ -23,11 +24,13 @@ import { MyAppointmentsComponent } from '@modules/patient-portal/components/my-a
 import { MyCalendarComponent } from '@modules/patient-portal/components/my-calendar/my-calendar.component';
 import { AppointmentDetailsDialogComponent } from '@modules/patient-portal/components/appointment-details-dialog/appointment-details-dialog.component';
 import { ConfirmDialogComponent } from '@modules/patient-portal/components/confirm-dialog/confirm-dialog.component';
+import { SettingsComponent } from '@modules/patient-portal/components/settings/settings.component';
 
 // Services
 import { BookingAgentService } from '@modules/patient-portal/services/booking-agent.service';
 import { ChatService } from '@modules/patient-portal/services/chat.service';
 import { PatientBookingService } from '@modules/patient-portal/services/patient-booking.service';
+import { NotificationService } from '@modules/patient-portal/services/notification.service';
 
 @NgModule({
   declarations: [
@@ -41,13 +44,15 @@ import { PatientBookingService } from '@modules/patient-portal/services/patient-
     MyAppointmentsComponent,
     MyCalendarComponent,
     AppointmentDetailsDialogComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    SettingsComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    TextFieldModule,
     PatientPortalRoutingModule,
     SharedModule,
     SharedMaterialModule,
@@ -57,6 +62,7 @@ import { PatientBookingService } from '@modules/patient-portal/services/patient-
     BookingAgentService,
     ChatService,
     PatientBookingService,
+    NotificationService,
     // If you enter this module directly having an authentication file in the browser, it is necessary to
     // initialize the app from the module (For example: entry from a marker of a specific component):
     AppInitializer,

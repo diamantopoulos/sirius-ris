@@ -156,6 +156,21 @@
   gap: 8px;
 }
 
+/* Loading Container */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  gap: 20px;
+}
+
+.loading-container p {
+  color: var(--opposite-color-01);
+  margin: 0;
+}
+
 /* Error Container */
 .error-container {
   text-align: center;

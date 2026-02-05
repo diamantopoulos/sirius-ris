@@ -3740,6 +3740,11 @@ async function addDomainCondition(req, res, domainType, completeDomain){
                         } else if(domainType == 'services' && req.body.imaging.service !== domain){
                             operationResult = false; /* Operation rejected */
                         }
+
+                        //Patient (role 9) can only book appointments for themselves:
+                        if(role === 9 && req.body.fk_patient !== user_id){
+                            operationResult = false; /* Operation rejected */
+                        }
                         break;
 
                     case 'performing':

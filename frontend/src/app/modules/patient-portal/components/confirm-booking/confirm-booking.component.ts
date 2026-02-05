@@ -20,6 +20,10 @@ export class ConfirmBookingComponent implements OnInit {
   //Submission state:
   public isSubmitting: boolean = false;
 
+  //Reschedule mode:
+  public isRescheduleMode: boolean = false;
+  public rescheduleAppointmentId: string | null = null;
+
   //Define Formgroup (Reactive form handling):
   public form!: FormGroup;
 
@@ -50,6 +54,10 @@ export class ConfirmBookingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //Check for reschedule mode:
+    this.rescheduleAppointmentId = sessionStorage.getItem('rescheduleAppointmentId');
+    this.isRescheduleMode = !!this.rescheduleAppointmentId;
+
     //Check if slot was selected:
     if(!this.sharedProp.current_datetime || !this.sharedProp.current_slot){
       //Redirect back to slot selection:
@@ -57,9 +65,37 @@ export class ConfirmBookingComponent implements OnInit {
       return;
     }
 
-    //Pre-fill contact from patient data if available:
-    if(this.sharedProp.current_patient?.person?.contact){
-      this.form.controls['contact'].setValue(this.sharedProp.current_patient.person.contact);
+    //Pre-fill form for reschedule mode with existing appointment data:
+    if (this.isRescheduleMode) {
+      const storedAppointment = sessionStorage.getItem('rescheduleAppointment');
+      if (storedAppointment) {
+        const appointment = JSON.parse(storedAppointment);
+
+        //Pre-fill contact:
+        if (appointment.contact) {
+          this.form.controls['contact'].setValue(appointment.contact);
+        } else if (this.sharedProp.current_patient?.person?.contact) {
+          this.form.controls['contact'].setValue(this.sharedProp.current_patient.person.contact);
+        }
+
+        //Pre-fill height and weight from private_health:
+        if (appointment.private_health) {
+          if (appointment.private_health.height) {
+            this.form.controls['height'].setValue(appointment.private_health.height);
+          }
+          if (appointment.private_health.weight) {
+            this.form.controls['weight'].setValue(appointment.private_health.weight);
+          }
+        }
+
+        //Pre-check terms for reschedule (they already accepted before):
+        this.form.controls['accept_terms'].setValue(true);
+      }
+    } else {
+      //Pre-fill contact from patient data if available (new booking):
+      if(this.sharedProp.current_patient?.person?.contact){
+        this.form.controls['contact'].setValue(this.sharedProp.current_patient.person.contact);
+      }
     }
   }
 
@@ -78,7 +114,40 @@ export class ConfirmBookingComponent implements OnInit {
         weight: this.form.value.weight
       };
 
-      //Save appointment:
+      //Handle reschedule mode - update existing appointment:
+      if (this.isRescheduleMode && this.rescheduleAppointmentId) {
+        const updateData: any = {
+          start: this.sharedProp.current_datetime.start + '.000Z',
+          end: this.sharedProp.current_datetime.end + '.000Z',
+          fk_slot: this.sharedProp.current_slot,
+          private_health: this.sharedProp.current_private_health
+        };
+
+        this.sharedFunctions.save('update', 'appointments', this.rescheduleAppointmentId, updateData, ['start', 'end', 'fk_slot', 'private_health'], (res: any) => {
+          this.isSubmitting = false;
+
+          if (res.success === true) {
+            //Clear reschedule data from sessionStorage:
+            sessionStorage.removeItem('rescheduleAppointment');
+            sessionStorage.removeItem('rescheduleAppointmentId');
+
+            //Show success message:
+            this.sharedFunctions.sendMessage(this.i18n.instant('PATIENT_PORTAL.BOOKING.RESCHEDULE_SUCCESS') || 'Appointment rescheduled successfully');
+
+            //Reset booking state:
+            this.patientBookingService.resetBookingState();
+
+            //Navigate to appointments list:
+            this.router.navigate(['/patient-portal/appointments']);
+          } else {
+            //Show error message:
+            this.sharedFunctions.sendMessage(this.i18n.instant('PATIENT_PORTAL.BOOKING.RESCHEDULE_ERROR') || 'Failed to reschedule appointment');
+          }
+        });
+        return;
+      }
+
+      //Save appointment (normal booking flow):
       this.patientBookingService.savePatientAppointment((res) => {
         this.isSubmitting = false;
 
@@ -105,12 +174,20 @@ export class ConfirmBookingComponent implements OnInit {
   // ON BACK:
   //--------------------------------------------------------------------------------------------------------------------//
   onBack(){
-    //Delete current draft before going back:
-    if(this.sharedProp.current_appointment_draft){
+    //Delete current draft before going back (only for normal booking, not reschedule):
+    if(!this.isRescheduleMode && this.sharedProp.current_appointment_draft){
       this.sharedFunctions.delete('single', 'appointments_drafts', this.sharedProp.current_appointment_draft);
       this.sharedProp.current_appointment_draft = undefined;
     }
-    this.router.navigate(['/patient-portal/booking/slot']);
+
+    //Navigate back to slot selection:
+    if (this.isRescheduleMode && this.rescheduleAppointmentId) {
+      this.router.navigate(['/patient-portal/booking/slot'], {
+        queryParams: { reschedule: this.rescheduleAppointmentId }
+      });
+    } else {
+      this.router.navigate(['/patient-portal/booking/slot']);
+    }
   }
   //--------------------------------------------------------------------------------------------------------------------//
 }

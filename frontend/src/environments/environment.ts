@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   version: '1.5.1',
-  bookingAgentUrl: 'http://localhost:3003'
+  bookingAgentUrl: 'http://localhost:3003',
+  notificationServiceUrl: 'http://localhost:3004'
 };
 
 // Set ObjectId regular expression to validate ObjectIds:

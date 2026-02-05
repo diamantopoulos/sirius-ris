@@ -1087,7 +1087,13 @@
     "ADMIN": "Administrator",
     "ADMIN_SETTINGS": "System settings",
     "PATIENT": "Patient",
-    "PATIENT_RESULTS": "Study results"
+    "PATIENT_HOME": "Home",
+    "PATIENT_APPOINTMENTS": "My Appointments",
+    "PATIENT_CALENDAR": "My Calendar",
+    "PATIENT_CHAT": "Chat Assistant",
+    "PATIENT_BOOK": "Book Appointment",
+    "PATIENT_RESULTS": "Study Results",
+    "PATIENT_SETTINGS": "Settings"
   },
   "START_PAGE": {
     "WELCOME": "Welcome to Sirius RIS",

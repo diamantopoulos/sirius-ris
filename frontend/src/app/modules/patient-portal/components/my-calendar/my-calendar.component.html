@@ -1,0 +1,44 @@
+<div class="my-calendar-container">
+  <div class="header">
+    <h2>
+      <mat-icon>calendar_month</mat-icon>
+      My Calendar
+    </h2>
+    <a mat-raised-button color="primary" routerLink="/patient-portal/booking">
+      <mat-icon>add</mat-icon>
+      Book Appointment
+    </a>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+  </div>
+
+  <!-- Calendar -->
+  <div *ngIf="!loading" class="calendar-wrapper">
+    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-color scheduled"></span>
+      <span>Scheduled</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color in-progress"></span>
+      <span>In Progress</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-color completed"></span>
+      <span>Completed</span>
+    </div>
+  </div>
+
+  <!-- No Appointments -->
+  <div *ngIf="!loading && calendarEvents.length === 0" class="no-appointments">
+    <mat-icon>event_busy</mat-icon>
+    <p>You don't have any appointments yet.</p>
+  </div>
+</div>

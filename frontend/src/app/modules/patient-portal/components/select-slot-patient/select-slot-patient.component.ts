@@ -3,7 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 //--------------------------------------------------------------------------------------------------------------------//
 // IMPORTS:
 //--------------------------------------------------------------------------------------------------------------------//
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SharedPropertiesService } from '@shared/services/shared-properties.service';
 import { SharedFunctionsService } from '@shared/services/shared-functions.service';
 import { PatientBookingService } from '@modules/patient-portal/services/patient-booking.service';
@@ -38,6 +38,12 @@ export class SelectSlotPatientComponent implements OnInit {
   public selectedEnd          : Date | undefined;
   public selectedSlot         : any  | undefined;
 
+  //Reschedule mode:
+  public isRescheduleMode     : boolean = false;
+  public rescheduleAppointmentId: string | null = null;
+  public rescheduleAppointment: any = null;
+  public loadingReschedule    : boolean = false;
+
   //References the #calendar (FullCalendar):
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
@@ -50,6 +56,7 @@ export class SelectSlotPatientComponent implements OnInit {
   //Inject services, components and router to the constructor:
   constructor(
     private router              : Router,
+    private route               : ActivatedRoute,
     public sharedProp           : SharedPropertiesService,
     public sharedFunctions      : SharedFunctionsService,
     public patientBookingService: PatientBookingService,
@@ -59,14 +66,60 @@ export class SelectSlotPatientComponent implements OnInit {
     this.sharedProp.userLogged = this.sharedFunctions.getUserInfo();
   }
 
-  ngOnInit(): void {
-    //Check if procedure was selected:
-    if(!this.sharedProp.current_imaging || !this.sharedProp.current_procedure){
-      //Redirect back to procedure selection:
-      this.router.navigate(['/patient-portal/booking/procedure']);
-      return;
-    }
+  //--------------------------------------------------------------------------------------------------------------------//
+  // LOAD RESCHEDULE APPOINTMENT:
+  //--------------------------------------------------------------------------------------------------------------------//
+  loadRescheduleAppointment(): void {
+    this.loadingReschedule = true;
 
+    // Try to get appointment data from sessionStorage first
+    const storedAppointment = sessionStorage.getItem('rescheduleAppointment');
+    if (storedAppointment) {
+      this.rescheduleAppointment = JSON.parse(storedAppointment);
+      this.setupRescheduleData();
+    } else if (this.rescheduleAppointmentId) {
+      // Fetch from API if not in sessionStorage
+      const params = {
+        'filter[_id]': this.rescheduleAppointmentId,
+        'proj[procedure]': 1,
+        'proj[imaging]': 1,
+        'proj[start]': 1,
+        'proj[end]': 1
+      };
+      this.sharedFunctions.find('appointments', params, (res: any) => {
+        if (res.success && res.data && res.data.length > 0) {
+          this.rescheduleAppointment = res.data[0];
+          this.setupRescheduleData();
+        } else {
+          this.loadingReschedule = false;
+        }
+      });
+    } else {
+      this.loadingReschedule = false;
+    }
+  }
+
+  setupRescheduleData(): void {
+    if (this.rescheduleAppointment) {
+      // Set current imaging from the appointment
+      this.sharedProp.current_imaging = this.rescheduleAppointment.imaging;
+      // Set current procedure from the appointment
+      this.sharedProp.current_procedure = this.rescheduleAppointment.procedure;
+      // Set modality from procedure if available (needed for template condition)
+      if (this.rescheduleAppointment.procedure?.fk_modality) {
+        this.sharedProp.current_modality = this.rescheduleAppointment.procedure.fk_modality;
+      } else {
+        // Set a placeholder to satisfy template condition
+        this.sharedProp.current_modality = { _id: 'reschedule' };
+      }
+
+      this.loadingReschedule = false;
+      // Now initialize the calendar
+      this.initializeCalendar();
+    }
+  }
+
+  initializeCalendar(): void {
     //Set min and max dates (Datepicker):
     const dateRangeLimit = this.sharedFunctions.setDateRangeLimit(new Date());
     this.minDate = dateRangeLimit.minDate;
@@ -82,7 +135,7 @@ export class SelectSlotPatientComponent implements OnInit {
       end: this.maxDate
     };
 
-    //Set FullCalendar Custom Buttons (simplified for patients - no urgency toggle):
+    //Set FullCalendar Custom Buttons:
     this.calendarOptions['customButtons'] = {
       datepicker: {
         text: this.i18n.instant('PATIENT_PORTAL.BOOKING.DATEPICKER_BUTTON'),
@@ -104,7 +157,7 @@ export class SelectSlotPatientComponent implements OnInit {
       },
     };
 
-    //Remove urgency buttons from header (patients can't access urgent slots):
+    //Remove urgency buttons from header:
     let headerToolbar: any = this.calendarOptions.headerToolbar?.valueOf();
     if(headerToolbar){
       headerToolbar['end'] = '';
@@ -120,8 +173,30 @@ export class SelectSlotPatientComponent implements OnInit {
     //Fix FullCalendar bug first Render:
     this.sharedFunctions.fixFullCalendarRender();
 
-    //Find slots (always non-urgent for patients):
+    //Find slots:
     this.findSlots(false, true);
+  }
+  //--------------------------------------------------------------------------------------------------------------------//
+
+  ngOnInit(): void {
+    // Check for reschedule mode from snapshot first (synchronous, more reliable)
+    const rescheduleId = this.route.snapshot.queryParams['reschedule'];
+    if (rescheduleId) {
+      this.isRescheduleMode = true;
+      this.rescheduleAppointmentId = rescheduleId;
+      this.loadRescheduleAppointment();
+      return; // Calendar will be initialized after appointment data is loaded
+    }
+
+    //Check if procedure was selected (only for new bookings):
+    if(!this.sharedProp.current_imaging || !this.sharedProp.current_procedure){
+      //Redirect back to procedure selection:
+      this.router.navigate(['/patient-portal/booking/procedure']);
+      return;
+    }
+
+    // Initialize calendar for normal booking flow
+    this.initializeCalendar();
   }
 
   //--------------------------------------------------------------------------------------------------------------------//
@@ -256,6 +331,11 @@ export class SelectSlotPatientComponent implements OnInit {
           if(res.data){
             if(res.data.length > 0){
               await Promise.all(Object.keys(res.data).map((key) => {
+                // Skip the appointment being rescheduled so its slot appears available
+                if (this.isRescheduleMode && res.data[key]._id === this.rescheduleAppointmentId) {
+                  return;
+                }
+
                 let backgroundColor = this.sharedProp.mainSettings.FullCalendarOptions.eventColor;
                 let borderColor = this.sharedProp.mainSettings.FullCalendarOptions.eventBorderColor;
                 let textColor = this.sharedProp.mainSettings.FullCalendarOptions.eventTextColor;
@@ -399,7 +479,16 @@ export class SelectSlotPatientComponent implements OnInit {
     this.sharedProp.current_modality = this.currentModality;
     this.sharedProp.current_urgency = false;  // Always false for patients
 
-    //Create appointment draft save data:
+    // Handle reschedule mode - go to confirm page (don't create draft, just store reschedule info)
+    if (this.isRescheduleMode && this.rescheduleAppointmentId) {
+      // Store reschedule appointment ID for confirm page
+      sessionStorage.setItem('rescheduleAppointmentId', this.rescheduleAppointmentId);
+      // Navigate to confirm step
+      this.router.navigate(['/patient-portal/booking/confirm']);
+      return;
+    }
+
+    //Create appointment draft save data (normal booking flow):
     let appointmentsDraftsSaveData: any = {
       imaging : {
         organization  : this.sharedProp.current_imaging.organization._id,

@@ -20,14 +20,13 @@
 }
 
 .booking-options {
-  display: flex;
-  gap: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
 .booking-card {
-  width: 400px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -47,25 +46,34 @@
   text-align: center;
 }
 
-.chat-card .card-icon {
+.appointments-card .card-icon {
   color: #1976d2;
 }
 
-.calendar-card .card-icon {
+.calendar-view-card .card-icon {
   color: #7b1fa2;
 }
 
+.chat-card .card-icon {
+  color: #00897b;
+}
+
+.booking-calendar-card .card-icon {
+  color: #f57c00;
+}
+
 .booking-card mat-card-content {
-  min-height: 150px;
+  min-height: 120px;
 }
 
 .booking-card mat-card-content ul {
   padding-left: 20px;
   color: #666;
+  margin-top: 10px;
 }
 
 .booking-card mat-card-content li {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .booking-card mat-card-actions {
@@ -76,12 +84,12 @@
 
 @media (max-width: 900px) {
   .booking-options {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
   }
 
   .booking-card {
-    width: 100%;
     max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
   }
 }

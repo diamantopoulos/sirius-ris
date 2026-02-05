@@ -117,8 +117,44 @@
   <div *ngIf="sharedProp.userLogged.permissions[0].role == 9">
     <h3>{{ 'SIDENAV.PATIENT' | i18n }}</h3>
 
+    <mat-list-item routerLink="/patient-portal">
+      <mat-icon>home</mat-icon><span>{{ 'SIDENAV.PATIENT_HOME' | i18n }}</span>
+    </mat-list-item>
+
+    <mat-divider></mat-divider>
+
+    <mat-list-item routerLink="/patient-portal/appointments">
+      <mat-icon>event_available</mat-icon><span>{{ 'SIDENAV.PATIENT_APPOINTMENTS' | i18n }}</span>
+    </mat-list-item>
+
+    <mat-divider></mat-divider>
+
+    <mat-list-item routerLink="/patient-portal/calendar">
+      <mat-icon>calendar_month</mat-icon><span>{{ 'SIDENAV.PATIENT_CALENDAR' | i18n }}</span>
+    </mat-list-item>
+
+    <mat-divider></mat-divider>
+
+    <mat-list-item routerLink="/patient-portal/chat">
+      <mat-icon>chat</mat-icon><span>{{ 'SIDENAV.PATIENT_CHAT' | i18n }}</span>
+    </mat-list-item>
+
+    <mat-divider></mat-divider>
+
+    <mat-list-item routerLink="/patient-portal/booking">
+      <mat-icon>add_circle</mat-icon><span>{{ 'SIDENAV.PATIENT_BOOK' | i18n }}</span>
+    </mat-list-item>
+
+    <mat-divider></mat-divider>
+
     <mat-list-item routerLink="/start">
       <mat-icon>fact_check</mat-icon><span>{{ 'SIDENAV.PATIENT_RESULTS' | i18n }}</span>
+    </mat-list-item>
+
+    <mat-divider></mat-divider>
+
+    <mat-list-item routerLink="/patient-portal/settings">
+      <mat-icon>settings</mat-icon><span>{{ 'SIDENAV.PATIENT_SETTINGS' | i18n }}</span>
     </mat-list-item>
   </div>
 

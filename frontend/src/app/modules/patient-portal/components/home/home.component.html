@@ -1,27 +1,73 @@
 <div class="patient-home-container">
   <div class="welcome-section">
     <h1>Welcome to MediSlot</h1>
-    <p>Choose how you'd like to book your appointment</p>
+    <p>Manage your appointments with ease</p>
   </div>
 
   <div class="booking-options">
+    <!-- My Appointments -->
+    <mat-card class="booking-card appointments-card" (click)="goToMyAppointments()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="card-icon">event_available</mat-icon>
+        <mat-card-title>My Appointments</mat-card-title>
+        <mat-card-subtitle>View your scheduled appointments</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>See all your upcoming and past appointments in a list view.</p>
+        <ul>
+          <li>View appointment details</li>
+          <li>Check appointment status</li>
+          <li>Cancel if needed</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary">
+          <mat-icon>event_available</mat-icon>
+          View Appointments
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- My Calendar -->
+    <mat-card class="booking-card calendar-view-card" (click)="goToMyCalendar()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="card-icon">calendar_month</mat-icon>
+        <mat-card-title>My Calendar</mat-card-title>
+        <mat-card-subtitle>Calendar view of appointments</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>View your appointments on an interactive calendar.</p>
+        <ul>
+          <li>Monthly/weekly views</li>
+          <li>Visual schedule overview</li>
+          <li>Click for details</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="accent">
+          <mat-icon>calendar_month</mat-icon>
+          Open Calendar
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
     <!-- Chat-based Booking -->
     <mat-card class="booking-card chat-card" (click)="goToChatBooking()">
       <mat-card-header>
         <mat-icon mat-card-avatar class="card-icon">chat</mat-icon>
         <mat-card-title>Chat Assistant</mat-card-title>
-        <mat-card-subtitle>Conversational booking experience</mat-card-subtitle>
+        <mat-card-subtitle>Conversational booking</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <p>Let our AI assistant help you schedule your appointment through a natural conversation.</p>
+        <p>Let our AI assistant help you schedule your appointment.</p>
         <ul>
           <li>Natural language interaction</li>
           <li>Guided booking process</li>
-          <li>Check or manage appointments</li>
+          <li>Ask questions anytime</li>
         </ul>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary">
+        <button mat-raised-button>
           <mat-icon>chat</mat-icon>
           Start Chat
         </button>
@@ -29,24 +75,24 @@
     </mat-card>
 
     <!-- Calendar-based Booking -->
-    <mat-card class="booking-card calendar-card" (click)="goToCalendarBooking()">
+    <mat-card class="booking-card booking-calendar-card" (click)="goToCalendarBooking()">
       <mat-card-header>
-        <mat-icon mat-card-avatar class="card-icon">calendar_month</mat-icon>
-        <mat-card-title>Calendar Booking</mat-card-title>
+        <mat-icon mat-card-avatar class="card-icon">add_circle</mat-icon>
+        <mat-card-title>Book Appointment</mat-card-title>
         <mat-card-subtitle>Visual slot selection</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <p>Browse available time slots directly on our calendar and pick your preferred date and time.</p>
+        <p>Browse available time slots and book directly.</p>
         <ul>
           <li>See all available slots</li>
-          <li>Visual calendar interface</li>
+          <li>Pick your preferred time</li>
           <li>Quick and direct booking</li>
         </ul>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="accent">
-          <mat-icon>calendar_month</mat-icon>
-          Open Calendar
+        <button mat-raised-button>
+          <mat-icon>add_circle</mat-icon>
+          Book Now
         </button>
       </mat-card-actions>
     </mat-card>

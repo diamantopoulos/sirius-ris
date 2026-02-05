@@ -55,6 +55,13 @@ export class ChatService implements OnDestroy {
   }
 
   /**
+   * Alias for clearMessages
+   */
+  clearConversation(): void {
+    this.clearMessages();
+  }
+
+  /**
    * Cancel current request (if streaming)
    */
   cancelRequest(): void {

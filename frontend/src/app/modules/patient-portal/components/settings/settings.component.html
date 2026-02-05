@@ -1,0 +1,139 @@
+<div class="settings-container">
+  <div class="settings-wrapper">
+    <h1 class="settings-title">
+      <mat-icon>settings</mat-icon>
+      Settings
+    </h1>
+
+    <!-- Notifications Section -->
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="card-icon telegram-icon">send</mat-icon>
+        <mat-card-title>Telegram Notifications</mat-card-title>
+        <mat-card-subtitle>Receive appointment notifications via Telegram</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Loading State -->
+        <div *ngIf="isLoadingStatus" class="loading-state">
+          <mat-spinner diameter="32"></mat-spinner>
+          <span>Loading...</span>
+        </div>
+
+        <!-- Linked State -->
+        <div *ngIf="!isLoadingStatus && telegramStatus.isLinked" class="linked-state">
+          <div class="status-badge linked">
+            <mat-icon>check_circle</mat-icon>
+            <span>Connected</span>
+          </div>
+
+          <div class="linked-info">
+            <p *ngIf="telegramStatus.username">
+              <strong>Username:</strong> @{{ telegramStatus.username }}
+            </p>
+            <p *ngIf="telegramStatus.linkedAt">
+              <strong>Linked:</strong> {{ telegramStatus.linkedAt | date:'medium' }}
+            </p>
+          </div>
+
+          <p class="info-text">
+            You will receive notifications about your appointments via Telegram.
+          </p>
+
+          <button mat-stroked-button color="warn" (click)="unlinkTelegram()" [disabled]="isUnlinking">
+            <mat-icon>link_off</mat-icon>
+            {{ isUnlinking ? 'Unlinking...' : 'Unlink Telegram' }}
+          </button>
+        </div>
+
+        <!-- Not Linked State -->
+        <div *ngIf="!isLoadingStatus && !telegramStatus.isLinked" class="not-linked-state">
+          <div class="status-badge not-linked">
+            <mat-icon>notifications_off</mat-icon>
+            <span>Not Connected</span>
+          </div>
+
+          <p class="info-text">
+            Link your Telegram account to receive instant notifications about:
+          </p>
+
+          <ul class="benefits-list">
+            <li><mat-icon>event_available</mat-icon> Appointment confirmations</li>
+            <li><mat-icon>update</mat-icon> Schedule changes</li>
+            <li><mat-icon>alarm</mat-icon> Appointment reminders</li>
+            <li><mat-icon>cancel</mat-icon> Cancellation notices</li>
+          </ul>
+
+          <!-- Link Generation -->
+          <div *ngIf="!linkData" class="generate-section">
+            <button mat-raised-button color="primary" (click)="generateLink()" [disabled]="isGeneratingLink">
+              <mat-icon>{{ isGeneratingLink ? 'hourglass_empty' : 'telegram' }}</mat-icon>
+              {{ isGeneratingLink ? 'Generating...' : 'Link Telegram' }}
+            </button>
+
+            <p *ngIf="linkError" class="error-text">
+              <mat-icon>error</mat-icon>
+              {{ linkError }}
+            </p>
+          </div>
+
+          <!-- QR Code and Link -->
+          <div *ngIf="linkData" class="link-section">
+            <div class="qr-code-container">
+              <img [src]="linkData.qrCode" alt="Telegram QR Code" class="qr-code">
+              <p class="qr-instruction">Scan with your phone camera</p>
+            </div>
+
+            <div class="divider">
+              <span>OR</span>
+            </div>
+
+            <div class="link-actions">
+              <button mat-raised-button color="primary" (click)="openLink()">
+                <mat-icon>open_in_new</mat-icon>
+                Open in Telegram
+              </button>
+              <button mat-stroked-button (click)="copyLink()">
+                <mat-icon>content_copy</mat-icon>
+                Copy Link
+              </button>
+            </div>
+
+            <div class="expiration-warning">
+              <mat-icon>schedule</mat-icon>
+              <span>Link expires in {{ formatExpiration(linkExpiresIn) }}</span>
+            </div>
+
+            <div class="instructions">
+              <p><strong>Instructions:</strong></p>
+              <ol>
+                <li>Scan the QR code or click "Open in Telegram"</li>
+                <li>Start the MediSlot bot in Telegram</li>
+                <li>Your account will be linked automatically</li>
+              </ol>
+            </div>
+
+            <button mat-button (click)="linkData = null; loadTelegramStatus()">
+              <mat-icon>refresh</mat-icon>
+              Check Status
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Future: Other Settings Sections -->
+    <!--
+    <mat-card class="settings-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="card-icon">email</mat-icon>
+        <mat-card-title>Email Notifications</mat-card-title>
+        <mat-card-subtitle>Configure email notification preferences</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="info-text">Coming soon...</p>
+      </mat-card-content>
+    </mat-card>
+    -->
+  </div>
+</div>

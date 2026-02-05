@@ -1,0 +1,87 @@
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--pink-intense);
+  border-bottom: 2px solid var(--pink-intense);
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+
+.dialog-title mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.dialog-content {
+  padding: 20px 0;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background-color: var(--base-color-02);
+  border-radius: 8px;
+}
+
+.detail-item mat-icon {
+  color: var(--pink-intense);
+  margin-top: 2px;
+}
+
+.detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 0.8em;
+  color: var(--base-icon-color);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 1em;
+  color: var(--opposite-color-01);
+  font-weight: 500;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.status-scheduled {
+  background-color: #1976d2;
+  color: white;
+}
+
+.status-in-progress {
+  background-color: #f57c00;
+  color: white;
+}
+
+.status-completed {
+  background-color: #388e3c;
+  color: white;
+}
+
+.status-cancelled {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px dashed var(--soft-color-01);
+}

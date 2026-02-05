@@ -3,8 +3,9 @@
 <ng-template #thenBlockValid>
   <div class="confirm-booking form-element">
     <h2 class="section-title">
-      <mat-icon>check_circle</mat-icon>
-      {{ 'PATIENT_PORTAL.BOOKING.CONFIRM_TITLE' | i18n }}
+      <mat-icon>{{ isRescheduleMode ? 'edit_calendar' : 'check_circle' }}</mat-icon>
+      <span *ngIf="!isRescheduleMode">{{ 'PATIENT_PORTAL.BOOKING.CONFIRM_TITLE' | i18n }}</span>
+      <span *ngIf="isRescheduleMode">Confirm Reschedule</span>
     </h2>
 
     <!-- Appointment Summary -->
@@ -151,7 +152,8 @@
         <button mat-flat-button type="submit" color="primary" [disabled]="!form.valid || isSubmitting">
           <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
           <mat-icon *ngIf="!isSubmitting">check</mat-icon>
-          {{ 'PATIENT_PORTAL.BOOKING.CONFIRM_BUTTON' | i18n }}
+          <span *ngIf="!isRescheduleMode">{{ 'PATIENT_PORTAL.BOOKING.CONFIRM_BUTTON' | i18n }}</span>
+          <span *ngIf="isRescheduleMode">Reschedule Appointment</span>
         </button>
       </div>
     </form>

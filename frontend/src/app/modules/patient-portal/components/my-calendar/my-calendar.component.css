@@ -1,0 +1,107 @@
+.my-calendar-container {
+  padding: 10px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--pink-intense);
+}
+
+.header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--opposite-color-01);
+  margin: 0;
+}
+
+.header h2 mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: var(--pink-intense);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.calendar-wrapper {
+  background-color: var(--current-wrap-bg-color);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--current-wrap-bg-color);
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+  color: var(--opposite-color-01);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-color.scheduled {
+  background-color: #1976d2;
+}
+
+.legend-color.in-progress {
+  background-color: #f57c00;
+}
+
+.legend-color.completed {
+  background-color: #388e3c;
+}
+
+.legend-color.cancelled {
+  background-color: #d32f2f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .my-calendar-container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .calendar-wrapper {
+    padding: 10px;
+  }
+
+  .legend {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  :host ::ng-deep .fc-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -86,8 +86,12 @@ export class UsersAuthService {
               duration: 2000
             });
 
-            //Redirect to Start Page:
-            this.router.navigate(['/start']);
+            //Redirect based on role (9: Patient goes to patient portal):
+            if(res.data.permissions[0].role == 9){
+              this.router.navigate(['/patient-portal']);
+            } else {
+              this.router.navigate(['/start']);
+            }
 
           //Multiple permissions:
           } else {
@@ -180,13 +184,17 @@ export class UsersAuthService {
           // Medical users don't change themes: Force opaque interface to preserve radiological environments (4: Médico).
           if(siriusAuth.permissions[0].role == 4){
             this.themesService.initializeTheme('dark');
-          } else { 
+          } else {
             // Initializate CSS theme:
             this.themesService.initializeTheme();
           }
 
-          //Redirect to Start Page:
-          this.router.navigate(['/start']);
+          //Redirect based on role (9: Patient goes to patient portal):
+          if(siriusAuth.permissions[0].role == 9){
+            this.router.navigate(['/patient-portal']);
+          } else {
+            this.router.navigate(['/start']);
+          }
         } else {
           //Send message into screen:
           this.userSigninError(res.message);

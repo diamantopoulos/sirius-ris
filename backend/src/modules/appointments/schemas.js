@@ -295,7 +295,6 @@ const Validator = [
         .withMessage(currentLang.ris.schema_validator.isMongoId + ' | "extra_procedures.*" (ObjectId).'),
 
     body('urgency')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "urgency" (true or false).')
         .toBoolean(),
@@ -333,28 +332,24 @@ const Validator = [
 
     body('media.CD')
         .optional()
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "media.CD" (true or false).')
         .toBoolean(),
 
     body('media.DVD')
         .optional()
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "media.DVD" (true or false).')
         .toBoolean(),
 
     body('media.acetate_sheets')
         .optional()
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "media.acetate_sheets" (true or false).')
         .toBoolean(),
     //----------------------------------------------------------------------------------------------------------------//
 
     body('contrast.use_contrast')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "contrast.use_contrast" (true or false).')
         .toBoolean(),
@@ -412,115 +407,96 @@ const Validator = [
         .withMessage(currentLang.ris.schema_validator.isRequiredDecimal + ' | "private_health.weight".'),
 
     body('private_health.diabetes')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.diabetes" (true or false).')
         .toBoolean(),
 
     body('private_health.hypertension')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.hypertension" (true or false).')
         .toBoolean(),
 
     body('private_health.epoc')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.epoc" (true or false).')
         .toBoolean(),
 
     body('private_health.smoking')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.smoking" (true or false).')
         .toBoolean(),
 
     body('private_health.malnutrition')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.malnutrition" (true or false).')
         .toBoolean(),
 
     body('private_health.obesity')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.obesity" (true or false).')
         .toBoolean(),
 
     body('private_health.hiv')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.hiv" (true or false).')
         .toBoolean(),
 
     body('private_health.renal_insufficiency')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.renal_insufficiency" (true or false).')
         .toBoolean(),
 
     body('private_health.heart_failure')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.heart_failure" (true or false).')
         .toBoolean(),
 
     body('private_health.ischemic_heart_disease')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.ischemic_heart_disease" (true or false).')
         .toBoolean(),
 
     body('private_health.valvulopathy')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.valvulopathy" (true or false).')
         .toBoolean(),
 
     body('private_health.arrhythmia')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.arrhythmia" (true or false).')
         .toBoolean(),
 
     body('private_health.cancer')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.cancer" (true or false).')
         .toBoolean(),
 
     body('private_health.dementia')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.dementia" (true or false).')
         .toBoolean(),
 
     body('private_health.claustrophobia')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.claustrophobia" (true or false).')
         .toBoolean(),
 
     body('private_health.asthma')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.asthma" (true or false).')
         .toBoolean(),
 
     body('private_health.hyperthyroidism')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.hyperthyroidism" (true or false).')
         .toBoolean(),
 
     body('private_health.hypothyroidism')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.hypothyroidism" (true or false).')
         .toBoolean(),
 
     body('private_health.pregnancy')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.pregnancy" (true or false).')
         .toBoolean(),
@@ -544,31 +520,26 @@ const Validator = [
         .withMessage(currentLang.ris.schema_validator.isLength + ' | "private_health.other" (min: 3, max: 60 [chars]).'),
 
     body('private_health.implants.cochlear_implant')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.implants.cochlear_implant" (true or false).')
         .toBoolean(),
 
     body('private_health.implants.cardiac_stent')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.implants.cardiac_stent" (true or false).')
         .toBoolean(),
 
     body('private_health.implants.metal_prostheses')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.implants.metal_prostheses" (true or false).')
         .toBoolean(),
 
     body('private_health.implants.metal_shards')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.implants.metal_shards" (true or false).')
         .toBoolean(),
 
     body('private_health.implants.pacemaker')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.implants.pacemaker" (true or false).')
         .toBoolean(),
@@ -580,13 +551,11 @@ const Validator = [
         .withMessage(currentLang.ris.schema_validator.isLength + ' | "private_health.implants.other" (min: 3, max: 30 [chars]).'),
 
     body('private_health.covid19.had_covid')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.covid19.had_covid" (true or false).')
         .toBoolean(),
 
     body('private_health.covid19.vaccinated')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "private_health.covid19.vaccinated" (true or false).')
         .toBoolean(),
@@ -618,7 +587,6 @@ const Validator = [
     //----------------------------------------------------------------------------------------------------------------//
 
     body('outpatient')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "outpatient" (true or false).')
         .toBoolean(),
@@ -662,14 +630,12 @@ const Validator = [
         .withMessage(currentLang.ris.schema_validator.isInt + ' | "cancellation_reasons".'),
     
     body('status')
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "outpatient" (true or false).')
         .toBoolean(),
 
     body('overbooking')
         .optional()
-        .trim()
         .isBoolean()
         .withMessage(currentLang.ris.schema_validator.isBoolean + ' | "overbooking" (true or false).')
         .toBoolean()

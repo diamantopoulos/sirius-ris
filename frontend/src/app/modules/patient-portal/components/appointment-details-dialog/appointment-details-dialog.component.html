@@ -1,0 +1,54 @@
+<h1 mat-dialog-title class="dialog-title">
+  <mat-icon>event</mat-icon>
+  Appointment Details
+</h1>
+
+<div mat-dialog-content class="dialog-content">
+  <div class="detail-item">
+    <mat-icon>medical_services</mat-icon>
+    <div class="detail-text">
+      <span class="detail-label">Procedure</span>
+      <span class="detail-value">{{ data.procedure || 'Medical Imaging' }}</span>
+    </div>
+  </div>
+
+  <div class="detail-item">
+    <mat-icon>calendar_today</mat-icon>
+    <div class="detail-text">
+      <span class="detail-label">Date</span>
+      <span class="detail-value">{{ formatDate(data.start) }}</span>
+    </div>
+  </div>
+
+  <div class="detail-item">
+    <mat-icon>schedule</mat-icon>
+    <div class="detail-text">
+      <span class="detail-label">Time</span>
+      <span class="detail-value">{{ formatTime(data.start, data.end) }}</span>
+    </div>
+  </div>
+
+  <div class="detail-item">
+    <mat-icon>info</mat-icon>
+    <div class="detail-text">
+      <span class="detail-label">Status</span>
+      <span class="detail-value status-badge" [ngClass]="'status-' + (data.statusClass || 'scheduled')">
+        {{ data.status || 'Scheduled' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="detail-item" *ngIf="data.location">
+    <mat-icon>location_on</mat-icon>
+    <div class="detail-text">
+      <span class="detail-label">Location</span>
+      <span class="detail-value">{{ data.location }}</span>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions class="dialog-actions">
+  <button mat-flat-button color="primary" (click)="close()">
+    Close
+  </button>
+</div>
