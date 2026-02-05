@@ -7,7 +7,7 @@
           <mat-icon>smart_toy</mat-icon>
         </div>
         <div class="header-text">
-          <h2>MediSlot Assistant</h2>
+          <h2>MediSlot Assistant <span *ngIf="appVersion" class="version-badge">{{ appVersion }}</span></h2>
           <span class="status-indicator">
             <span class="status-dot"></span>
             Online

@@ -39,6 +39,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // LLM model info
   llmModelName = '';
+  appVersion = '';
 
   constructor(
     private chatService: ChatService,
@@ -69,6 +70,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       .then(data => {
         if (data.llm?.displayName) {
           this.llmModelName = data.llm.displayName;
+        }
+        if (data.version) {
+          this.appVersion = `v${data.version}`;
         }
       })
       .catch(err => {
