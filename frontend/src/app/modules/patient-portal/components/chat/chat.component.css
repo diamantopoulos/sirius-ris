@@ -88,6 +88,16 @@
   50% { opacity: 0.5; }
 }
 
+.model-badge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
 .menu-button {
   color: white;
 }

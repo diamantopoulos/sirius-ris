@@ -11,6 +11,7 @@
           <span class="status-indicator">
             <span class="status-dot"></span>
             Online
+            <span *ngIf="llmModelName" class="model-badge">{{ llmModelName }}</span>
           </span>
         </div>
       </div>

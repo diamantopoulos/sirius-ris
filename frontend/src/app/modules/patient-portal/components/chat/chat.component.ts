@@ -37,6 +37,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   expandedToolCalls: { [key: number]: boolean } = {};
   private shouldScroll = false;
 
+  // LLM model info
+  llmModelName = '';
+
   constructor(
     private chatService: ChatService,
     private sanitizer: DomSanitizer,
@@ -56,6 +59,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit(): void {
     this.chatService.connect();
+    this.fetchLlmModelInfo();
+  }
+
+  private fetchLlmModelInfo(): void {
+    // Fetch model info from booking-agent health endpoint
+    fetch('http://localhost:3003/health')
+      .then(res => res.json())
+      .then(data => {
+        if (data.llm?.displayName) {
+          this.llmModelName = data.llm.displayName;
+        }
+      })
+      .catch(err => {
+        console.warn('Could not fetch LLM model info:', err);
+      });
   }
 
   ngAfterViewChecked(): void {
