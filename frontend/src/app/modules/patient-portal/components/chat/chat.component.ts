@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked }
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ChatService, ChatMessage } from '@modules/patient-portal/services/chat.service';
+import { SharedPropertiesService } from '@shared/services/shared-properties.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -38,10 +39,19 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   constructor(
     private chatService: ChatService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private sharedProp: SharedPropertiesService
   ) {
     this.messages$ = this.chatService.getMessages();
     this.isLoading$ = this.chatService.isLoading();
+
+    //Clear action bar (reset from other pages like Study Results):
+    this.sharedProp.actionSetter({
+      content_title       : '',
+      content_icon        : '',
+      add_button          : false,
+      filters_form        : false
+    });
   }
 
   ngOnInit(): void {

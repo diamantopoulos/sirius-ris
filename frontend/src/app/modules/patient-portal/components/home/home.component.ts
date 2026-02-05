@@ -24,9 +24,27 @@ export class PatientHomeComponent implements OnInit {
   ) {
     //Get Logged User Information:
     this.sharedProp.userLogged = this.sharedFunctions.getUserInfo();
+
+    //Clear action bar (reset from other pages like Study Results):
+    this.sharedProp.actionSetter({
+      content_title       : '',
+      content_icon        : '',
+      add_button          : false,
+      filters_form        : false
+    });
   }
 
   ngOnInit(): void {}
+
+  //Navigate to my appointments:
+  goToMyAppointments(): void {
+    this.router.navigate(['/patient-portal/appointments']);
+  }
+
+  //Navigate to my calendar:
+  goToMyCalendar(): void {
+    this.router.navigate(['/patient-portal/calendar']);
+  }
 
   //Navigate to chat booking:
   goToChatBooking(): void {

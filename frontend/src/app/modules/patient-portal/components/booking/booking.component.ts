@@ -37,6 +37,14 @@ export class BookingComponent implements OnInit, OnDestroy {
     //Get Logged User Information:
     this.sharedProp.userLogged = this.sharedFunctions.getUserInfo();
 
+    //Clear action bar (reset from other pages like Study Results):
+    this.sharedProp.actionSetter({
+      content_title       : '',
+      content_icon        : '',
+      add_button          : false,
+      filters_form        : false
+    });
+
     //Set current patient from logged user (patients book for themselves):
     this.setCurrentPatient();
   }
