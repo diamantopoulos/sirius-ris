@@ -32,6 +32,8 @@ export interface SSECompleteEvent {
     completionTokens: number;
     totalTokens: number;
   };
+  /** V2: Current booking session state */
+  sessionState?: string;
 }
 
 export interface SSEErrorEvent {
@@ -126,7 +128,7 @@ export class BookingAgentService implements OnDestroy {
     this.abortController = new AbortController();
 
     try {
-      const response = await fetch(`${this.API_URL}/api/chat`, {
+      const response = await fetch(`${this.API_URL}/api/v2/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
