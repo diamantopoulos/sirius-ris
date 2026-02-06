@@ -1,4 +1,4 @@
-db = db.getSiblingDB("sirius_db");
+db = db.getSiblingDB("sirius");
 
 try { db.users.createIndex({ fk_person: 1 }); print("Índice creado: users.fk_person"); } catch (e) { print("Error en users.fk_person: " + e); }
 
